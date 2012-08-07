@@ -1,6 +1,5 @@
-//@ sourceURL = blocks/mediator/mixin.js
 define([
-  'yaul/make'
+   'yaul/make'
   ,'yaul/typeOf'
   ,'yaul/isArray'
   ,'yaul/hasOwn'
@@ -149,4 +148,3 @@ var REGEX = /:(latch(ed$)?)/i
 
 return mixin
 })
-//@ sourceURL = blocks/mediator/mixin.js
