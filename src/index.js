@@ -1,5 +1,3 @@
-//@ sourceURL = blocks/mediator/index.js
-
 var MediatorMixin = require('./mixin')
 var extend = require('yaul/extend')
 
@@ -37,5 +35,3 @@ extend(Mediator,{
 })
 
 module.exports = Mediator;
-
-//@ sourceURL = blocks/mediator/index.js
