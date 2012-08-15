@@ -71,7 +71,7 @@ var mixin = {
     var events = make(_events, type, [])
     var _args,_latched
     
-    if (!utilities.typeOf(callback,'function')) {
+    if (!typeOf(callback,'function')) {
       throw new TypeError('`#addEvent`\'s second argument must be a function') 
     }
 
