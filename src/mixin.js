@@ -21,6 +21,7 @@ var _EVENTS_ = '_events'
 var _SWITCHED_ = '_switched'
 var _LATCHED_ = '_latched'
 var _ARGUMENTS_ = '_arguments'
+
 var mixin = {
    getEvents: function(key){
      var _events = make(this, _EVENTS_, {})
@@ -33,7 +34,7 @@ var mixin = {
     type = removeLatched[call](this,type)
     var  self = this
     var _switched = make(self,_SWITCHED_, {})
-    
+
     // todo: use yaul/map
     events = events.map(function ( event ) {
       if ( self.grr ) {
@@ -44,12 +45,13 @@ var mixin = {
       self.addEvent(event, fireCheck)
       return event
     })
-    
+
     function fireCheck () {
       var length = events.length
       while ( length-- ) {
         if(!_switched[events[length]]) return
       }
+
       self.fireEvent(type +':latched')
     }
     
