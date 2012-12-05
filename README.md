@@ -3,14 +3,14 @@ Yet another event handler
 
 ### Static API
 
-- #on | #addListener
+- on | addListener
   ```js
   var Mediator = require('yeah')
   function event (arg) { alert(arg)}
   Mediator.on('something', event)
   Mediator.emit('something', 'Nayn') // alerts Nayn
   ```
-- #off | #removeListener
+- off | removeListener
   ```js
   var Mediator = require('yeah')
   function event () { alert('Hello') }
@@ -18,13 +18,13 @@ Yet another event handler
   Mediator.off('something', event)
   Mediator.emit('something') // no alert
   ```
-- #emit
+- emit
 
 
 ### Mixin API
 
-- #getEvents
-- #addEvent
+- getEvents
+- addEvent
   ```js
   var EventsMixin = require('yeah/mixin')
   var mediator = extend({}, EventsMixin)
@@ -41,8 +41,8 @@ Yet another event handler
   // add more events to the compound event
   mediator.addEvent('both.things', function letsAddAnother () {})
   ```
-- #addEvents
-- #removeEvent
-- #fireEvent
-- #hasFired
+- addEvents
+- removeEvent
+- fireEvent
+- hasFired
 
