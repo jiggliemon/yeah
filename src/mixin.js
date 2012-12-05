@@ -1,8 +1,20 @@
-var make = require('yaul/make')
-var typeOf = require('yaul/typeOf')
-var isArray = require('yaul/isArray')
-var hasOwn = require('yaul/hasOwn')
-var slice = require('yaul/slice')
+function make (context, key, value ) {
+  context[key] = context[key] || value
+  return context[key]
+}
+
+function typeOf(obj, is) {
+  var type = Object.prototype.toString.call(obj).slice(8,-1).toLowerCase()
+  return is? type == is : type
+}
+
+function hasOwn (what, key) {
+  return Object.prototype.hasOwnProperty.call(what,key)
+}
+
+function slice (obj, offset) {
+  return Array.prototype.slice.call(obj, offset)
+}
 
 function remove (arr, from, to) {
   if (from < 0) return arr
@@ -22,6 +34,13 @@ function removeLatched(type){
   return type
 }
 
+function concatEvent (self, events, callback) {
+  // todo: use yaul/indexOf
+  if ( events.indexOf(callback) == -1 ) {
+    events.push(callback)
+  }
+}
+
 var REGEX = /:(latch(ed$)?)/i
 var call = 'call'
 var _EVENTS_ = '_events'
@@ -32,9 +51,8 @@ var _ARGUMENTS_ = '_arguments'
 var mixin = {
    getEvents: function(key){
      var _events = make(this, _EVENTS_, {})
-     var events = _events[type] 
-
-     return typeOf(key,'string') ? events ? events : [] : Object.keys(_events)
+     var events = _events[key] 
+     return key ? events ? events : [] : Object.keys(_events)
   }
   
   ,addCompoundEvent: function ( events, type, callback ) {
@@ -44,10 +62,6 @@ var mixin = {
 
     // todo: use yaul/map
     events = events.map(function ( event ) {
-      if ( self.grr ) {
-        console.log(event)
-      }
-
       event = removeLatched[call](self, event)
       self.addEvent(event, fireCheck)
       return event
@@ -69,26 +83,42 @@ var mixin = {
 
   ,addEvent: function( /* Sting */ type, /* Function */ callback ){
 
-    if ( isArray(type) ) { 
+    if ( typeOf(type, 'array') ) { 
       return this.addCompoundEvent.apply(this, arguments)
     }
 
-    type = removeLatched[call](this,type)
+    type = removeLatched.call(this,type)
     
     var  self = this
     var _events = make(self, _EVENTS_, {})
     var events = make(_events, type, [])
-    var _args,_latched
-    
-    if (!typeOf(callback,'function')) {
-      throw new TypeError('`#addEvent`\'s second argument must be a function') 
-    }
+    var _args = make(self,_ARGUMENTS_, {})
+    var _latched = make(self,_LATCHED_, {})
+    var isLatched = _latched[type]
 
-    // todo: use yaul/indexOf
-    if ( events.indexOf(callback) === -1 ) {
-      _args = make(self,_ARGUMENTS_, {})
-      _latched = make(self,_LATCHED_, {})
-      _latched[type] ? callback.apply(self,_args[type]) : events.push(callback)
+    var callbackType = typeOf(callback)
+    if (callbackType == 'function'){
+      if (isLatched) {
+        callback.apply(self,_args[type])
+      } else {
+        if (events.indexOf(callback) == -1) {
+          events.push(callback)
+        }
+      }
+    } else if (callbackType == 'array') {
+      for (var i = 0; i < callback.length; i++) {
+        if (typeof callback[i] == 'function') {
+          if (isLatched) {
+            callback[i].apply(self, _args[type])
+          } else {
+            if (events.indexOf(callback[i]) == -1) {
+              events.push(callback[i])
+            }
+          }
+        }
+      }
+    } else {
+      throw new TypeError('`#addEvent`\'s second argument must be a function or an array') 
     }
 
     return self
@@ -132,12 +162,12 @@ var mixin = {
     if ( events && length ) {
       for ( ; i < length; i++ ) {
         if ( i in events) {
-          //try{
+          try{
             events[i].apply(self,args)
-          //} catch (e) { 
+          } catch (e) { 
             //window.console && console.log(events[i])
             //throw new Error('Problem with the `'+ type +'` event \n'+ e)
-          //}
+          }
         }
       }
     }
