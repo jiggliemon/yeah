@@ -1,5 +1,6 @@
 var MediatorMixin = require('./mixin')
 var extend = require('yaul/extend')
+var slice = Array.prototype.slice
 
 var s = document.createElement('script')
 var addNodeMethod = s.addEventListener ? 'addEventListener':'attachEvent'
@@ -16,22 +17,28 @@ function Mediator (){
 Mediator.prototype = extend({}, MediatorMixin)
 
 extend(Mediator,{
-   add : function () {
+   emit : function () {
+    if (arguments.length) {
+      s.dispatchEvent.apply(s,arguments)
+    }
 
-   }
-  ,remove : function () {
-
+    return this
   }
-  ,fire : function () {
 
-  }
   ,addListener : function ( node, event, fn, capture ) {
-    node[addNodeMethod](event, fn, capture )
+    var hasNode = typeof node == 'string'?1:0
+    var el = hasNode?s:node
+    el[addNodeMethod].apply(el,slice.call(arguments, hasNode))
   }
+  
   ,removeListener : function ( node, event, fn, capture ) {
-    node[removeNodeMethod](event, fn, capture)
+    var hasNode = typeof node == 'string' ?1:0
+    var el = hasNode?s:node
+    el[removeNodeMethod].apply(el,slice.call(arguments, hasNode))
   }
-
 })
+
+Mediator.on = Mediator.addListener
+Mediator.off = Mediator.removeListener
 
 module.exports = Mediator;
