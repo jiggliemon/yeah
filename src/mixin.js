@@ -4,6 +4,13 @@ var isArray = require('yaul/isArray')
 var hasOwn = require('yaul/hasOwn')
 var slice = require('yaul/slice')
 
+function remove (arr, from, to) {
+  if (from < 0) return arr
+  var rest = arr.slice(parseInt(to || from) + 1 || arr.length)
+  arr.length = from < 0 ? arr.length + from : from
+  return arr.push.apply(arr, rest)
+}
+
 function removeLatched(type){
   var _latched = make(this,_LATCHED_, {})
   if ( type.indexOf(':') ) {
@@ -83,7 +90,18 @@ var mixin = {
       _latched = make(self,_LATCHED_, {})
       _latched[type] ? callback.apply(self,_args[type]) : events.push(callback)
     }
+
     return self
+  }
+
+  ,removeEvent: function (type, callback) {
+    var self = this
+    var _events = make(self, _EVENTS_, {})
+    var events = make(_events, type, [])
+    var i = events.indexOf(callback)
+    if (i) {
+      events = remove(events,i)
+    }
   }
 
   ,addEvents: function(/* Object */ events){
