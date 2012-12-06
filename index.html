@@ -32,9 +32,62 @@
       <section>
         <h1>Yeah</h1>
 
-<p>Yet another event handler</p>
+<p>Yet another event handler (AKA Sub/Pub).  What seperates Yeah from other Sub/Pub helpers is it provides two key features to help deal with event heavy applications; Compound events and Latched events.  </p>
 
-<h2>Examples:</h2>
+<h4>Examples:</h4>
+
+<ul>
+<li><a href="#extending-objects">Extending Objects</a></li>
+<li><a href="#using-as-a-global-mediator">Using As A Global Mediator</a></li>
+<li><a href="#latched-events-at-a-glance">Latched events at a glance</a></li>
+</ul><h4>Methods:</h4>
+
+<ul>
+<li><a href="#addevent">addEvent</a></li>
+<li><a href="#addevents">addEvents</a></li>
+<li><a href="#removeevent">removeEvent</a></li>
+<li><a href="#fireevent">fireEvent</a></li>
+<li><a href="#hasfired">hasFired</a></li>
+<li><a href="#getevents">getEvents</a></li>
+<li><a href="#callmemaybe">callMeMaybe</a></li>
+</ul><h2>Examples:</h2>
+
+<h4>Extending objects</h4>
+
+<p>There's a few ways you can mix Yeah's functionality into your application.</p>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">yeah</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah'</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">APP</span> <span class="o">=</span> <span class="nx">yeah</span><span class="p">({</span>
+    <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">what</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">options</span> <span class="o">=</span> <span class="nx">options</span> <span class="o">||</span> <span class="p">{}</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">addEvents</span><span class="p">(</span><span class="nx">options</span><span class="p">.</span><span class="nx">events</span><span class="p">)</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'hello'</span><span class="p">,</span> <span class="nx">what</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="nx">APP</span><span class="p">.</span><span class="nx">initialize</span><span class="p">(</span><span class="s1">'World'</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">events</span><span class="o">:</span> <span class="p">{</span>
+        <span class="nx">hello</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">what</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">alert</span><span class="p">(</span><span class="s1">'Hello '</span><span class="o">+</span> <span class="nx">what</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">})</span>
+
+<span class="c1">// ==========================</span>
+<span class="c1">// Use as a standard constructor</span>
+<span class="kd">var</span> <span class="nx">yeah</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah'</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">APP</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">yeah</span><span class="p">()</span>
+
+<span class="c1">// ==========================</span>
+<span class="c1">// Request the `mixin` object to use as a standard mixin</span>
+<span class="kd">var</span> <span class="nx">EventsMixin</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah/mixin'</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">APP</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="nx">extend</span><span class="p">(</span><span class="nx">APP</span><span class="p">,</span> <span class="nx">EventsMixin</span><span class="p">)</span>
+</pre></div>
+
+<h4>Using As A Global Mediator</h4>
+
+<p>This example show's yeah being used as a global mediator.  We're utilizing  compound events to detect when the app can initialize (after the FB object is available &amp; the DOM is ready).</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Mediator</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah'</span><span class="p">)</span>
 <span class="kd">var</span> <span class="nx">APP</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'app'</span><span class="p">)</span>
@@ -72,23 +125,44 @@
 
 </pre></div>
 
-<h2>Mixin API</h2>
+<h4>Latched events at a glance</h4>
 
-<h4>Methods:</h4>
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">yeah</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah'</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">APP</span> <span class="o">=</span> <span class="nx">yeah</span><span class="p">({</span>
+     <span class="nx">i</span><span class="o">:</span> <span class="mi">0</span>
+    <span class="p">,</span><span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'tick:latched'</span><span class="p">)</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'---- Initialized ----'</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="p">,</span><span class="nx">increment</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">i</span><span class="o">++</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">i</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">})</span>
 
-<ul>
-<li><a href="#addevent">addEvent</a></li>
-<li><a href="#addevents">addEvents</a></li>
-<li><a href="#removeevent">removeEvent</a></li>
-<li><a href="#fireevent">fireEvent</a></li>
-<li><a href="#hasfired">hasFired</a></li>
-<li><a href="#getevents">getEvents</a></li>
-<li><a href="#callmemaybe">callMeMaybe</a></li>
-</ul><h4>Example:</h4>
+<span class="c1">// Queue up the `tick` stack with 5 events</span>
+<span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;=</span> <span class="mi">5</span><span class="p">;</span><span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// the functions need to be unique.</span>
+    <span class="c1">// so we can't do addEvent('tick',APP.increment)</span>
+    <span class="nx">APP</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">(</span><span class="s1">'tick'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">APP</span><span class="p">.</span><span class="nx">increment</span><span class="p">()</span>
+    <span class="p">})</span>
+<span class="p">}</span>
 
-<div class="highlight"><pre><span class="kd">var</span> <span class="nx">EventMixin</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah/mixin'</span><span class="p">)</span>
-<span class="kd">var</span> <span class="nx">mediator</span> <span class="o">=</span> <span class="nx">extend</span><span class="p">({},</span> <span class="nx">EventMixin</span><span class="p">)</span>
+<span class="c1">// this will fire 'tick', logging 1-5</span>
+<span class="nx">APP</span><span class="p">.</span><span class="nx">initialize</span><span class="p">()</span>
+
+<span class="c1">// Here's some timers simulating the apps duration</span>
+<span class="c1">// We'll add 5 more events to `tick` after it's been fired</span>
+<span class="kd">var</span> <span class="nx">interval</span> <span class="o">=</span> <span class="nx">setInterval</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">APP</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">(</span><span class="s1">'tick'</span><span class="p">,</span><span class="nx">APP</span><span class="p">.</span><span class="nx">increment</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">APP</span><span class="p">.</span><span class="nx">i</span> <span class="o">==</span> <span class="mi">10</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">clearInterval</span><span class="p">(</span><span class="nx">interval</span><span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">},</span> <span class="mi">200</span><span class="p">)</span><span class="err">​</span>
 </pre></div>
+
+<h2>Methods</h2>
 
 <h1></h1>
 
@@ -124,11 +198,9 @@
 
 <ol>
 <li>
-<em>{array}</em> <strong>names</strong> : A list of event's that need to be fired before the compound event can fire<br>
-</li>
+<em>{array}</em> <strong>names</strong> : A list of event's that need to be fired before the compound event can fire.<br><em><em>NOTE</em>: these will all be fired as <a href="#latched-events">:latched</a>.</em> </li>
 <li>
-<em>{string}</em> <strong>name</strong> : The compound event's name<br>
-</li>
+<em>{string}</em> <strong>name</strong> : The compound event's name</li>
 <li>
 <em>{function}</em> <strong>event</strong> (optional): The event to be added to the compound event's <strong>event stack</strong>
 </li>
@@ -350,6 +422,16 @@
       </footer>
     </div>
     <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-		
+		          <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-30450217-2");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
   </body>
 </html>
