@@ -143,12 +143,32 @@ instance.addEvents({
 ===
 ### #removeEvent
 
+#### Arguments:
+
+###### __Standard__
+
+1. *{string}* __name__ : the event stack identifier
+2. *{function}* __event__ : a reference of the function to remove
+
+#### Example:
+```js
+function doThis () {
+	console.log('lol')
+}
+
+instance.addEvent('on.lol', doThis)
+instance.fireEvent('on.lol') // logs: 'lol'
+instance.removeEvent('on.lol', doThis)
+instance.fireEvent('on.lol') // nothing happens
+```
+
+
 ===
 ### #fireEvent
 
 #### Arguments:
 ###### __Standard__
-1. *{string}* __name__ : The event identifer
+1. *{string}* __name__ : The event stack identifer
 2. *{arguments}* __arguments__ (optional) : Every subsequent argument will be passed into  the fired events
 
 ```js
