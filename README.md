@@ -49,7 +49,7 @@ Mediator.addEvent(['DOM.ready','FB.ready'], 'APP.env.ready', function () {
 - [fireEvent](#fireevent)
 - [hasFired](#hasfired)
 - [getEvents](#getevents)
-- [call](#call)
+- [callMeMaybe](#callmemaybe)
 
 #### Example:
 ```js
@@ -237,4 +237,21 @@ instance.addEvent('smile',fn)
 instance.getEvents('smile') // false
 instance.getEvents('smile') // [fn] returns an array of the functions in the event stack
 ```
+
+===
+### #callMeMaybe
+Returns a function that will fire a specified event stack when called.
+
+#### Arguments:
+_same as [#fireEvent](#fireevent)_
+
+#### Example:
+```js
+instance.addEvent('hello', function (arg) {
+	console.log('Hello' + ' ' + arg)
+})
+var latered = instance.callMeMaybe('hello', 'Chase') // Not fired yet
+latered() // logs: Hello Chase
+```
+
 
