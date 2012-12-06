@@ -79,6 +79,8 @@ var mixin = {
     if ( callback ) {
       self.addEvent(type, callback )
     }
+
+    return self
   } 
 
   ,addEvent: function( /* Sting */ type, /* Function */ callback ){
@@ -132,6 +134,7 @@ var mixin = {
     if (i) {
       events = remove(events,i)
     }
+    return self
   }
 
   ,addEvents: function(/* Object */ events){
@@ -164,17 +167,14 @@ var mixin = {
         if ( i in events) {
           try{
             events[i].apply(self,args)
-          } catch (e) { 
-            //window.console && console.log(events[i])
-            //throw new Error('Problem with the `'+ type +'` event \n'+ e)
-          }
+          } catch (e) { }
         }
       }
     }
     
     if ( isLatched ) {
       _args[type] = args
-      delete _events[type]
+      _events[type] = []
     }
     
     return self
