@@ -1,0 +1,355 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Yeah by jiggliemon</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="javascripts/scale.fix.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1 class="header">Yeah</h1>
+        <p class="header">Yet another event handler</p>
+
+        <ul>
+          <li class="download"><a class="buttons" href="https://github.com/jiggliemon/yeah/zipball/master">Download ZIP</a></li>
+          <li class="download"><a class="buttons" href="https://github.com/jiggliemon/yeah/tarball/master">Download TAR</a></li>
+          <li><a class="buttons github" href="https://github.com/jiggliemon/yeah">View On GitHub</a></li>
+        </ul>
+
+        <p class="header">This project is maintained by <a class="header name" href="https://github.com/jiggliemon">jiggliemon</a></p>
+
+
+      </header>
+      <section>
+        <h1>Yeah</h1>
+
+<p>Yet another event handler</p>
+
+<h2>Examples:</h2>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">Mediator</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah'</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">APP</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'app'</span><span class="p">)</span>
+
+<span class="c1">// Handle the FB SDK</span>
+<span class="nx">fbAsyncInit</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">Mediator</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'FB.ready:latched'</span><span class="p">,</span><span class="nx">FB</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="c1">// When we need to access the FB object,</span>
+<span class="c1">// we can simply reference it via the Mediator</span>
+<span class="c1">// this way we know it will be available</span>
+<span class="nx">Mediator</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">(</span><span class="s1">'FB.ready'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">fb</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">fb</span><span class="p">.</span><span class="nx">init</span><span class="p">({</span>
+    <span class="nx">appId</span>      <span class="o">:</span> <span class="s1">'YOUR_APP_ID'</span><span class="p">,</span>
+    <span class="nx">channelUrl</span> <span class="o">:</span> <span class="s1">'//WWW.YOUR_DOMAIN.COM/channel.html'</span><span class="p">,</span> 
+    <span class="nx">status</span>     <span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">cookie</span>     <span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+    <span class="nx">xfbml</span>      <span class="o">:</span> <span class="kc">true</span>
+  <span class="p">})</span>
+<span class="p">})</span>
+
+<span class="c1">// Notify the mediator when the DOM is ready</span>
+<span class="c1">// This can now be used like $(document).ready</span>
+<span class="nx">addEventListener</span><span class="p">(</span><span class="s1">'DOMContentLoaded'</span><span class="p">,</span> <span class="nx">Mediator</span><span class="p">.</span><span class="nx">callMeMaybe</span><span class="p">(</span><span class="s1">'DOM.ready:latched'</span><span class="p">))</span>
+
+<span class="c1">// the event 'APP.env.ready' will fire once</span>
+<span class="c1">// the FB sdk has been initialized and the </span>
+<span class="c1">// DOM is ready.</span>
+<span class="nx">Mediator</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">([</span><span class="s1">'DOM.ready'</span><span class="p">,</span><span class="s1">'FB.ready'</span><span class="p">],</span> <span class="s1">'APP.env.ready'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">APP</span><span class="p">.</span><span class="nx">init</span><span class="p">()</span>
+    <span class="c1">// This is safe because the DOMContentLoaded event has already fired</span>
+    <span class="nx">APP</span><span class="p">.</span><span class="nx">inject</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">)</span>
+<span class="p">})</span>
+
+</pre></div>
+
+<h2>Mixin API</h2>
+
+<h4>Methods:</h4>
+
+<ul>
+<li><a href="#addevent">addEvent</a></li>
+<li><a href="#addevents">addEvents</a></li>
+<li><a href="#removeevent">removeEvent</a></li>
+<li><a href="#fireevent">fireEvent</a></li>
+<li><a href="#hasfired">hasFired</a></li>
+<li><a href="#getevents">getEvents</a></li>
+<li><a href="#callmemaybe">callMeMaybe</a></li>
+</ul><h4>Example:</h4>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">EventMixin</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah/mixin'</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">mediator</span> <span class="o">=</span> <span class="nx">extend</span><span class="p">({},</span> <span class="nx">EventMixin</span><span class="p">)</span>
+</pre></div>
+
+<h1></h1>
+
+<h3>#addEvent</h3>
+
+<h4>Arguments:</h4>
+
+<h6><strong>Standard</strong></h6>
+
+<ol>
+<li>
+<em>{string}</em>  <strong>name</strong> : The name of the event stack<br>
+</li>
+<li>
+<p><em>{function}</em> <strong>event</strong> : Unique event to be added to the <strong>event stack</strong>  </p>
+
+<div class="highlight"><pre><span class="nx">addEvent</span><span class="p">(</span> <span class="s1">'name'</span><span class="p">,</span> <span class="nx">fn</span> <span class="p">)</span>
+</pre></div>
+</li>
+</ol><h6><strong>Add Event List</strong></h6>
+
+<ol>
+<li>
+<em>{string}</em> <strong>name</strong> : The name of the event stack<br>
+</li>
+<li>
+<em>{array}</em> <strong>stack</strong> : A list of functions to add to the <strong>event stack</strong><br>
+</li>
+</ol><div class="highlight"><pre><span class="nx">addEvent</span><span class="p">(</span> <span class="s1">'name'</span><span class="p">,</span> <span class="p">[</span><span class="nx">fn1</span><span class="p">,</span> <span class="nx">fn2</span> <span class="cm">/*, …*/</span><span class="p">]</span> <span class="p">)</span>
+</pre></div>
+
+<h6><strong>Create Compound Event</strong></h6>
+
+<ol>
+<li>
+<em>{array}</em> <strong>names</strong> : A list of event's that need to be fired before the compound event can fire<br>
+</li>
+<li>
+<em>{string}</em> <strong>name</strong> : The compound event's name<br>
+</li>
+<li>
+<em>{function}</em> <strong>event</strong> (optional): The event to be added to the compound event's <strong>event stack</strong>
+</li>
+</ol><div class="highlight"><pre><span class="nx">addEvent</span><span class="p">(</span> <span class="p">[</span><span class="s1">'dom.ready'</span><span class="p">,</span><span class="s1">'template.ready'</span><span class="p">],</span> <span class="s1">'everythings.ready'</span><span class="p">,</span> <span class="nx">fn</span> <span class="p">)</span>
+</pre></div>
+
+<h4>Examples:</h4>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">EventsMixin</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah/mixin'</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">mediator</span> <span class="o">=</span> <span class="nx">extend</span><span class="p">({},</span> <span class="nx">EventsMixin</span><span class="p">)</span>
+
+<span class="c1">// add an event to an event key</span>
+<span class="nx">mediator</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">(</span><span class="s1">'something'</span><span class="p">,</span> <span class="nx">fn</span><span class="p">)</span>
+<span class="c1">// add an array of events to one event key</span>
+<span class="nx">mediator</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">(</span><span class="s1">'something'</span><span class="p">,</span> <span class="p">[</span>
+  <span class="kd">function</span> <span class="p">()</span> <span class="p">{},</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{}</span>
+<span class="p">])</span>
+
+<span class="c1">// compound events: when 2+ events are fired, fire another</span>
+<span class="nx">mediator</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">([</span><span class="s1">'something'</span><span class="p">,</span><span class="s1">'anotherthing'</span><span class="p">],</span><span class="s1">'both.things'</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">oneThing</span><span class="p">()</span> <span class="p">{})</span>
+<span class="c1">// add more events to the compound event</span>
+<span class="nx">mediator</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">(</span><span class="s1">'both.things'</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">letsAddAnother</span> <span class="p">()</span> <span class="p">{})</span>
+</pre></div>
+
+<h1></h1>
+
+<h3>#addEvents</h3>
+
+<p>A convenience method for adding multiple event stacks at a time.</p>
+
+<h4>Arguments:</h4>
+
+<h6><strong>Standard</strong></h6>
+
+<ol>
+<li>
+<em>{object}</em> <strong>hash</strong> : key/value object where <code>key</code> is the event name, and <code>value</code> is a function or array of functions<br>
+</li>
+</ol><div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">addEvents</span><span class="p">({</span><span class="nx">key</span><span class="o">:</span> <span class="nx">fn</span><span class="p">,</span> <span class="nx">anotherKey</span><span class="o">:</span> <span class="nx">anotherFn</span> <span class="p">})</span>
+</pre></div>
+
+<h4>Example:</h4>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">addEvents</span><span class="p">({</span>
+    <span class="s1">'model.ready'</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/path'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'data.got'</span><span class="p">,</span> <span class="nx">response</span><span class="p">.</span><span class="nx">text</span><span class="p">)</span>
+        <span class="p">})</span>
+    <span class="p">},</span>
+    <span class="s1">'data.got'</span><span class="o">:</span> <span class="p">[</span>
+        <span class="kd">function</span> <span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">text</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'dog'</span><span class="p">))</span> <span class="p">{</span>
+                <span class="c1">// do something for dogs</span>
+            <span class="p">}</span>
+        <span class="p">},</span>
+        <span class="kd">function</span> <span class="p">(</span><span class="nx">text</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">text</span><span class="p">.</span><span class="nx">indexOf</span><span class="p">(</span><span class="s1">'cat'</span><span class="p">))</span> <span class="p">{</span>
+                <span class="c1">// do something for cats</span>
+            <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">]</span>
+<span class="p">})</span>
+</pre></div>
+
+<h1></h1>
+
+<h3>#removeEvent</h3>
+
+<h4>Arguments:</h4>
+
+<h6><strong>Standard</strong></h6>
+
+<ol>
+<li>
+<em>{string}</em> <strong>name</strong> : the event stack identifier</li>
+<li>
+<em>{function}</em> <strong>event</strong> : a reference of the function to remove</li>
+</ol><h4>Example:</h4>
+
+<div class="highlight"><pre><span class="kd">function</span> <span class="nx">doThis</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'lol'</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="nx">instance</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">(</span><span class="s1">'on.lol'</span><span class="p">,</span> <span class="nx">doThis</span><span class="p">)</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'on.lol'</span><span class="p">)</span> <span class="c1">// logs: 'lol'</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">removeEvent</span><span class="p">(</span><span class="s1">'on.lol'</span><span class="p">,</span> <span class="nx">doThis</span><span class="p">)</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'on.lol'</span><span class="p">)</span> <span class="c1">// nothing happens</span>
+</pre></div>
+
+<h1></h1>
+
+<h3>#fireEvent</h3>
+
+<h4>Arguments:</h4>
+
+<h6><strong>Standard</strong></h6>
+
+<ol>
+<li>
+<em>{string}</em> <strong>name</strong> : The event stack identifer</li>
+<li>
+<em>{arguments}</em> <strong>arguments</strong> (optional) : Every subsequent argument will be passed into  the fired events</li>
+</ol><div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'name'</span>  <span class="cm">/*, arg1, arg2, … */</span><span class="p">)</span>
+</pre></div>
+
+<h6>Latched Events</h6>
+
+<ol>
+<li>
+<em>{string}</em> '__name__' + ':latched' : An event stack identifier with a concatenated <code>:latched</code> </li>
+<li>
+<em>{arguments}</em> <strong>arguments</strong> : The arguments work the same as with the standard firing</li>
+</ol><p>A latched event is one that once fired, remains active for the remainder of the application. Once fired,   Subsequent attempts to add a function to a latched event's event stack will result in the function being fired immedatly. </p>
+
+<p>An example of a native "latched" event would be the <code>DOMContentLoaded</code> event. Once the DOM Content has loaded, it will forever be loaded. </p>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'name:latched'</span>  <span class="cm">/*, arg1, arg2, …*/</span><span class="p">)</span>
+</pre></div>
+
+<h4>Example:</h4>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">EventMixin</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah/mixin'</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">instance</span> <span class="o">=</span> <span class="nx">extend</span><span class="p">({},</span> <span class="nx">EventMixin</span><span class="p">)</span>
+<span class="kd">var</span> <span class="nx">wachooSay</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="kd">function</span> <span class="nx">say</span> <span class="p">(</span><span class="nx">what</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="nx">what</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="nx">instance</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">(</span><span class="s1">'say.hello'</span><span class="p">,</span> <span class="p">[</span>
+    <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span><span class="nx">wachooSay</span> <span class="o">=</span> <span class="p">[]},</span>
+    <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span><span class="nx">wachooSay</span><span class="p">.</span><span class="nx">push</span><span class="p">(</span><span class="s2">"Hello"</span><span class="p">)},</span>
+    <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span><span class="nx">wachooSay</span><span class="p">.</span><span class="nx">concat</span><span class="p">(</span><span class="nb">Array</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">slice</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="nx">arguments</span><span class="p">))</span> <span class="p">},</span>
+    <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span> <span class="nx">say</span><span class="p">(</span><span class="nx">wachooSay</span><span class="p">.</span><span class="nx">join</span><span class="p">(</span><span class="s1">' '</span><span class="p">))</span> <span class="p">}</span>
+<span class="p">])</span>
+
+<span class="c1">// Firing with the standard method</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'say.hello'</span><span class="p">,</span> <span class="s2">"Jiggliemon"</span><span class="p">)</span> <span class="c1">// will alert `Hello Jiggliemon`</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'say.hello'</span><span class="p">,</span> <span class="s2">"Friends"</span><span class="p">)</span> <span class="c1">// will alert `Hello Friends`</span>
+
+<span class="c1">// Firing with the `:latched` identifier</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'say.hello:latched'</span><span class="p">,</span> <span class="s2">"Visitor"</span><span class="p">,</span> <span class="s2">":)"</span><span class="p">)</span> <span class="c1">// will alert `Hello Visitor :)`</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'say.hello'</span><span class="p">,</span> <span class="s2">"Goodbye"</span><span class="p">)</span> 
+<span class="nx">instance</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">(</span><span class="s1">'say.hello'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s1">'Simple Hello'</span><span class="p">)</span>
+<span class="p">})</span> <span class="c1">// will alert `Simple Hello` immediatly</span>
+</pre></div>
+
+<h1></h1>
+
+<h3>#hasFired</h3>
+
+<h4>Arguments:</h4>
+
+<h6><strong>Standard</strong></h6>
+
+<ol>
+<li>
+<em>{string}</em> <strong>name</strong> : Event stack identifer</li>
+</ol><div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">hasFired</span><span class="p">(</span><span class="s1">'name'</span><span class="p">)</span>
+</pre></div>
+
+<h4>Example:</h4>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">(</span><span class="s1">'smile'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s1">':)'</span><span class="p">)</span>
+<span class="p">})</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">hasFired</span><span class="p">(</span><span class="s1">'smile'</span><span class="p">)</span> <span class="c1">// false</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'smile'</span><span class="p">)</span> <span class="c1">// alerts `smile</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">hasFired</span><span class="p">(</span><span class="s1">'smile'</span><span class="p">)</span> <span class="c1">// true</span>
+</pre></div>
+
+<h1></h1>
+
+<h3>#getEvents</h3>
+
+<h4>Arguments:</h4>
+
+<h6><strong>Standard</strong></h6>
+
+<ol>
+<li>
+<em>{string}</em> <strong>name</strong> : Event stack identifer</li>
+</ol><div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">getEvents</span><span class="p">(</span><span class="s1">'name'</span><span class="p">)</span>
+</pre></div>
+
+<h4>Example:</h4>
+
+<div class="highlight"><pre><span class="kd">var</span> <span class="nx">fn</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s1">':)'</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">(</span><span class="s1">'smile'</span><span class="p">,</span><span class="nx">fn</span><span class="p">)</span>
+
+<span class="nx">instance</span><span class="p">.</span><span class="nx">getEvents</span><span class="p">(</span><span class="s1">'smile'</span><span class="p">)</span> <span class="c1">// false</span>
+<span class="nx">instance</span><span class="p">.</span><span class="nx">getEvents</span><span class="p">(</span><span class="s1">'smile'</span><span class="p">)</span> <span class="c1">// [fn] returns an array of the functions in the event stack</span>
+</pre></div>
+
+<h1></h1>
+
+<h3>#callMeMaybe</h3>
+
+<p>Returns a function that will fire a specified event stack when called.</p>
+
+<h4>Arguments:</h4>
+
+<p><em>same as <a href="#fireevent">#fireEvent</a></em></p>
+
+<h4>Example:</h4>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">(</span><span class="s1">'hello'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Hello'</span> <span class="o">+</span> <span class="s1">' '</span> <span class="o">+</span> <span class="nx">arg</span><span class="p">)</span>
+<span class="p">})</span>
+<span class="kd">var</span> <span class="nx">latered</span> <span class="o">=</span> <span class="nx">instance</span><span class="p">.</span><span class="nx">callMeMaybe</span><span class="p">(</span><span class="s1">'hello'</span><span class="p">,</span> <span class="s1">'Chase'</span><span class="p">)</span> <span class="c1">// Not fired yet</span>
+<span class="nx">latered</span><span class="p">()</span> <span class="c1">// logs: Hello Chase</span>
+</pre></div>
+      </section>
+      <footer>
+        <p><small>Hosted on <a href="https://pages.github.com">GitHub Pages</a> using the Dinky theme</small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+		
+  </body>
+</html>
