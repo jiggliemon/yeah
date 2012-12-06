@@ -33,7 +33,7 @@ function remove (arr, from, to) {
 
 function removeLatched(type){
   var _latched = make(this,_LATCHED_, {})
-  if ( type.indexOf(':') ) {
+  if ( type.indexOf(':') !== -1) {
     if ( REGEX.test(type) ) {
       type = type.replace(REGEX,'')
       _latched[type] = 1

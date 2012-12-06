@@ -25,7 +25,6 @@ describe('EventMixin', function () {
 
   describe('#addEvent', function () {
 
-
     it("should add a unique function to the event stack when the 1st argument is a string & 2nd is fn", function () {
       Mediator.addEvent('key', function (argument) {
         console.log(argument)
