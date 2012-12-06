@@ -1,57 +1,44 @@
 # Yeah
-Yeah stands for: Yet another event handler;
+Yet another event handler
 
-### Static API
+## Examples:
 
-#### Methods:  
-- [on | addListener](#on--addlistener)
-- [off | removeListener](#off--removelistener)
-- [removeEvent](#removeevent)
-- [fireEvent](#fireevent)
-- [hasFired](#hasfired)
-- [getEvents](#getevents)
-
-#### Example:  
 ```js
 var Mediator = require('yeah')
-var ajax = require('ajax')
+var APP = require('app')
 
-Mediator.on('template.ready', function (tmpl) {
-	document.getElementById('los-el').innerHTML = tmpl
+// Handle the FB SDK
+fbAsyncInit = function() {
+	Mediator.fireEvent('FB.ready:latched',FB)
+}
+
+// When we need to access the FB object,
+// we can simply reference it via the Mediator
+// this way we know it will be available
+Mediator.addEvent('FB.ready', function (fb) {
+	fb.init({
+    appId      : 'YOUR_APP_ID',
+    channelUrl : '//WWW.YOUR_DOMAIN.COM/channel.html', 
+    status     : true,
+    cookie     : true,
+    xfbml      : true
+  })
 })
 
-ajax('http://path.com/to/tmpl.html', function (err, response) {
-	if (err) {
-		Mediator.emit('template.failed', err)
-	}
-		
-	if (response.text.length) {
-		Mediator.emit('template.ready', response.text)
-	}
+// Notify the mediator when the DOM is ready
+// This can now be used like $(document).ready
+addEventListener('DOMContentLoaded', Mediator.callMeMaybe('DOM.ready:latched'))
+
+// the event 'APP.env.ready' will fire once
+// the FB sdk has been initialized and the 
+// DOM is ready.
+Mediator.addEvent(['DOM.ready','FB.ready'], 'APP.env.ready', function () {
+	APP.init()
+	// This is safe because the DOMContentLoaded event has already fired
+	APP.inject(document.body)
 })
-```
-===
-### #on | #addListener
 
-```js
-var Mediator = require('yeah')
-function event (arg) { alert(arg)}
-Mediator.on('something', event)
-Mediator.emit('something', 'Nayn') // alerts Nayn
 ```
-===
-### #off | #removeListener
-  
-```js
-var Mediator = require('yeah')
-function event () { alert('Hello') }
-Mediator.on('something',event)
-Mediator.off('something', event)
-Mediator.emit('something') // no alert
-```
-===
-### emit
-
 
 ## Mixin API
 
@@ -62,7 +49,7 @@ Mediator.emit('something') // no alert
 - [fireEvent](#fireevent)
 - [hasFired](#hasfired)
 - [getEvents](#getevents)
-
+- [call](#call)
 
 #### Example:
 ```js

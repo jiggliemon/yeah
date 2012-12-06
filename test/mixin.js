@@ -54,7 +54,6 @@ describe('EventMixin', function () {
   })
 
   describe('#addEvents', function () {
-
     it("should add multiple events when an event hash is passed as the 1st argument", function () {
       Mediator.addEvents({
         key:function () {},
@@ -113,6 +112,14 @@ describe('EventMixin', function () {
       assert.equal(2, fired.count)
     })
 
+    it("should only fire through a :latched event stack once", function () {
+      Mediator.addEvent("some", fired)
+      Mediator.fireEvent("some:latched")
+      Mediator.fireEvent("some")
+      Mediator.fireEvent("some:latched")
+      assert.equal(1, fired.count)
+    })
+
     it("should only fire a latched event once", function () {
       Mediator.addEvent('something', function () {
         fired()
@@ -125,7 +132,14 @@ describe('EventMixin', function () {
 
   })
 
-
-
+  describe('#callMeMaybe', function () {
+    it('should return a constructed function that will fire an event', function () {
+      Mediator.addEvent("fire", fired)
+      Mediator.addEvent("call", Mediator.callMeMaybe("fire"))
+      Mediator.fireEvent("call")
+      Mediator.fireEvent("call")
+      assert.equal(2, fired.count)
+    })
+  })
 
 })

@@ -1,3 +1,11 @@
+var REGEX = /:(latch(ed$)?)/i
+var call = 'call'
+var _EVENTS_ = '_events'
+var _SWITCHED_ = '_switched'
+var _LATCHED_ = '_latched'
+var _ARGUMENTS_ = '_arguments'
+
+
 function make (context, key, value ) {
   context[key] = context[key] || value
   return context[key]
@@ -34,19 +42,6 @@ function removeLatched(type){
   return type
 }
 
-function concatEvent (self, events, callback) {
-  // todo: use yaul/indexOf
-  if ( events.indexOf(callback) == -1 ) {
-    events.push(callback)
-  }
-}
-
-var REGEX = /:(latch(ed$)?)/i
-var call = 'call'
-var _EVENTS_ = '_events'
-var _SWITCHED_ = '_switched'
-var _LATCHED_ = '_latched'
-var _ARGUMENTS_ = '_arguments'
 
 var mixin = {
    getEvents: function(key){
@@ -183,6 +178,12 @@ var mixin = {
   ,hasFired: function (key) {
     var _switched = make(this,_SWITCHED_, {})
     return _switched[key] ? true : false
+  }
+
+  ,callMeMaybe: function () {
+    var self = this
+    var args = arguments
+    return  function () { self.fireEvent.apply(self,args) }
   }
 }
 
