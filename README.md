@@ -2,8 +2,9 @@
 Yet another event handler (AKA Sub/Pub).  What seperates Yeah from other Sub/Pub helpers is it provides two key features to help deal with event heavy applications; Compound events and Latched events.  
 
 #### Examples:
-- [Using Yeah With Facebook's JS SDK]()
-- [Using As A Global Mediator]()
+- [Extending Objects](#extending-objects)
+- [Using As A Global Mediator](#using-as-a-global-mediator)
+- [Latched events at a glance](#latched-events-at-a-glance)
 
 #### Methods:
 - [addEvent](#addevent)
@@ -88,6 +89,43 @@ Mediator.addEvent(['DOM.ready','FB.ready'], 'APP.env.ready', function () {
 	APP.inject(document.body)
 })
 
+```
+
+#### Latched events at a glance
+```js
+var yeah = require('yeah')
+var APP = yeah({
+     i: 0
+    ,initialize: function () {
+        this.fireEvent('tick:latched')
+        console.log('---- Initialized ----')
+    }
+    ,increment: function () {
+        this.i++
+        console.log(this.i)
+    }
+})
+
+// Queue up the `tick` stack with 5 events
+for (var i = 1; i <= 5;i++) {
+    // the functions need to be unique.
+    // so we can't do addEvent('tick',APP.increment)
+    APP.addEvent('tick', function () {
+        APP.increment()
+    })
+}
+
+// this will fire 'tick', logging 1-5
+APP.initialize()
+
+// Here's some timers simulating the apps duration
+// We'll add 5 more events to `tick` after it's been fired
+var interval = setInterval(function () {
+    APP.addEvent('tick',APP.increment)
+    if (APP.i == 10) {
+        clearInterval(interval)
+    }
+}, 200)​
 ```
 
 
