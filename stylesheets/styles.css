@@ -136,6 +136,21 @@ header ul.downloads a strong {
 }
 
 
+ol.arguments {
+
+}
+ol.arguments li {
+}
+ol.arguments li em {
+
+}
+ol.arguments li em:first-child {
+  display: inline-block;
+  width: 75px;
+} 
+ol.arguments li strong {
+
+}
 
 /*header ul.glossary {
   margin: 0;
@@ -157,7 +172,7 @@ strong {
 
 
 section {
-  width:530px;
+  width:570px;
   float:right;
   padding-bottom:50px;
 }
@@ -172,6 +187,10 @@ a.hr, hr {
   height:1px;
   margin:40px 0 20px;
   display: block;
+}
+
+.license {
+  margin-top: 100px;
 }
 
 footer {

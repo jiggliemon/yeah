@@ -53,7 +53,7 @@
 
 
 <h2>Examples:</h2>
-<a class="hr" name="extending-objects"></a>
+<a name="extending-objects"></a>
 <h4>Extending objects</h4>
 <p>There's a few ways you can mix Yeah's functionality into your application.</p>
 
@@ -87,7 +87,7 @@
 </pre>
 </div>
 
-<a class="hr" name="using-as-a-global-mediator"></a>
+<a name="using-as-a-global-mediator"></a>
 <h4>Using As A Global Mediator</h4>
 <p>This example show's yeah being used as a global mediator.  We're utilizing  compound events to detect when the app can initialize (after the FB object is available &amp; the DOM is ready).</p>
 
@@ -127,7 +127,7 @@
 </pre>
 </div>
 
-<a class="hr" name="latched-events-at-a-glance"></a>
+<a name="latched-events-at-a-glance"></a>
 <h4>Latched events at a glance</h4>
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">yeah</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah'</span><span class="p">)</span>
 <span class="kd">var</span> <span class="nx">APP</span> <span class="o">=</span> <span class="nx">yeah</span><span class="p">({</span>
@@ -452,6 +452,17 @@
 <span class="kd">var</span> <span class="nx">latered</span> <span class="o">=</span> <span class="nx">instance</span><span class="p">.</span><span class="nx">callMeMaybe</span><span class="p">(</span><span class="s1">'hello'</span><span class="p">,</span> <span class="s1">'Chase'</span><span class="p">)</span> <span class="c1">// Not fired yet</span>
 <span class="nx">latered</span><span class="p">()</span> <span class="c1">// logs: Hello Chase</span>
 </pre></div>
+
+<div class="license">
+<h3>The MIT License (MIT)</h3>
+<h6>Copyright (c) 2012 Chase Wilson (chase@agroism.com)</h6>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</p>
+    </div>
       </section>
 
 
