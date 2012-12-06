@@ -12,6 +12,7 @@
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
   </head>
+
   <body>
     <div class="wrapper">
       <header>
@@ -21,37 +22,39 @@
         <p class="view"><a href="https://github.com/jiggliemon/yeah">View the Project on GitHub <small>jiggliemon/yeah</small></a></p>
 
 
-        <ul>
+        <ul class="downloads">
           <li><a href="https://github.com/jiggliemon/yeah/zipball/master">Download <strong>ZIP File</strong></a></li>
           <li><a href="https://github.com/jiggliemon/yeah/tarball/master">Download <strong>TAR Ball</strong></a></li>
           <li><a href="https://github.com/jiggliemon/yeah">View On <strong>GitHub</strong></a></li>
         </ul>
+
+        <dl class="glossary">
+            <dt>Examples:</dt>
+            <dd><a href="#extending-objects">Extending Objects</a></dd>
+            <dd><a href="#using-as-a-global-mediator">Using As A Global Mediator</a></dd>
+            <dd><a href="#latched-events-at-a-glance">Latched events at a glance</a></dd>
+
+            <dt>Methods:</dt>
+            <dd><a href="#addevent">addEvent</a></dd>
+            <dd><a href="#addevents">addEvents</a></dd>
+            <dd><a href="#removeevent">removeEvent</a></dd>
+            <dd><a href="#fireevent">fireEvent</a></dd>
+            <dd><a href="#hasfired">hasFired</a></dd>
+            <dd><a href="#getevents">getEvents</a></dd>
+            <dd><a href="#callmemaybe">callMeMaybe</a></dd>
+        </dl>
+
       </header>
+
       <section>
         <h1>Yeah</h1>
+        <p>Yet another event handler (AKA Sub/Pub).  What seperates Yeah from other Sub/Pub helpers is it provides two key features to help deal with event heavy applications; Compound events and Latched events.</p>
 
-<p>Yet another event handler (AKA Sub/Pub).  What seperates Yeah from other Sub/Pub helpers is it provides two key features to help deal with event heavy applications; Compound events and Latched events.  </p>
 
-<h4>Examples:</h4>
 
-<ul>
-<li><a href="#extending-objects">Extending Objects</a></li>
-<li><a href="#using-as-a-global-mediator">Using As A Global Mediator</a></li>
-<li><a href="#latched-events-at-a-glance">Latched events at a glance</a></li>
-</ul><h4>Methods:</h4>
-
-<ul>
-<li><a href="#addevent">addEvent</a></li>
-<li><a href="#addevents">addEvents</a></li>
-<li><a href="#removeevent">removeEvent</a></li>
-<li><a href="#fireevent">fireEvent</a></li>
-<li><a href="#hasfired">hasFired</a></li>
-<li><a href="#getevents">getEvents</a></li>
-<li><a href="#callmemaybe">callMeMaybe</a></li>
-</ul><h2>Examples:</h2>
-
+<h2>Examples:</h2>
+<a class="hr" name="extending-objects"></a>
 <h4>Extending objects</h4>
-
 <p>There's a few ways you can mix Yeah's functionality into your application.</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">yeah</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah'</span><span class="p">)</span>
@@ -81,10 +84,11 @@
 <span class="kd">var</span> <span class="nx">EventsMixin</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah/mixin'</span><span class="p">)</span>
 <span class="kd">var</span> <span class="nx">APP</span> <span class="o">=</span> <span class="p">{}</span>
 <span class="nx">extend</span><span class="p">(</span><span class="nx">APP</span><span class="p">,</span> <span class="nx">EventsMixin</span><span class="p">)</span>
-</pre></div>
+</pre>
+</div>
 
+<a class="hr" name="using-as-a-global-mediator"></a>
 <h4>Using As A Global Mediator</h4>
-
 <p>This example show's yeah being used as a global mediator.  We're utilizing  compound events to detect when the app can initialize (after the FB object is available &amp; the DOM is ready).</p>
 
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">Mediator</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah'</span><span class="p">)</span>
@@ -120,11 +124,11 @@
     <span class="c1">// This is safe because the DOMContentLoaded event has already fired</span>
     <span class="nx">APP</span><span class="p">.</span><span class="nx">inject</span><span class="p">(</span><span class="nb">document</span><span class="p">.</span><span class="nx">body</span><span class="p">)</span>
 <span class="p">})</span>
+</pre>
+</div>
 
-</pre></div>
-
+<a class="hr" name="latched-events-at-a-glance"></a>
 <h4>Latched events at a glance</h4>
-
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">yeah</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah'</span><span class="p">)</span>
 <span class="kd">var</span> <span class="nx">APP</span> <span class="o">=</span> <span class="nx">yeah</span><span class="p">({</span>
      <span class="nx">i</span><span class="o">:</span> <span class="mi">0</span>
@@ -160,53 +164,62 @@
 <span class="p">},</span> <span class="mi">200</span><span class="p">)</span><span class="err">​</span>
 </pre></div>
 
+
+
 <h2>Methods</h2>
 
-<h1></h1>
-
+<!-- ----------------------------------------------------  -->
+<a class="hr" name="addevent"></a>
 <h3>#addEvent</h3>
-
 <h4>Arguments:</h4>
-
 <h6><strong>Standard</strong></h6>
 
-<ol>
-<li>
-<em>{string}</em>  <strong>name</strong> : The name of the event stack<br>
-</li>
-<li>
-<p><em>{function}</em> <strong>event</strong> : Unique event to be added to the <strong>event stack</strong>  </p>
+<ol class="arguments">
+    <li>
+        <em>{string}</em>  <strong>name</strong> : The name of the event stack
+    </li>
+    <li>
+        <em>{function}</em> <strong>event</strong> : Unique event to be added to the <strong>event stack</strong>
+    </li>
+</ol>
 
-<div class="highlight"><pre><span class="nx">addEvent</span><span class="p">(</span> <span class="s1">'name'</span><span class="p">,</span> <span class="nx">fn</span> <span class="p">)</span>
-</pre></div>
-</li>
-</ol><h6><strong>Add Event List</strong></h6>
+<div class="highlight">
+    <pre><span class="nx">addEvent</span><span class="p">(</span> <span class="s1">'name'</span><span class="p">,</span> <span class="nx">fn</span> <span class="p">)</span></pre>
+</div>
 
-<ol>
-<li>
-<em>{string}</em> <strong>name</strong> : The name of the event stack<br>
-</li>
-<li>
-<em>{array}</em> <strong>stack</strong> : A list of functions to add to the <strong>event stack</strong><br>
-</li>
-</ol><div class="highlight"><pre><span class="nx">addEvent</span><span class="p">(</span> <span class="s1">'name'</span><span class="p">,</span> <span class="p">[</span><span class="nx">fn1</span><span class="p">,</span> <span class="nx">fn2</span> <span class="cm">/*, …*/</span><span class="p">]</span> <span class="p">)</span>
-</pre></div>
+
+<h6><strong>Add Event List</strong></h6>
+<ol class="arguments">
+    <li>
+        <em>{string}</em> <strong>name</strong> : The name of the event stack
+    </li>
+    <li>
+        <em>{array}</em> <strong>stack</strong> : A list of functions to add to the <strong>event stack</strong>
+    </li>
+</ol>
+
+<div class="highlight"><pre><span class="nx">addEvent</span><span class="p">(</span> <span class="s1">'name'</span><span class="p">,</span> <span class="p">[</span><span class="nx">fn1</span><span class="p">,</span> <span class="nx">fn2</span> <span class="cm">/*, …*/</span><span class="p">]</span> <span class="p">)</span>
+</pre>
+</div>
 
 <h6><strong>Create Compound Event</strong></h6>
+<ol class="arguments">
+    <li>
+        <em>{array}</em> <strong>names</strong> : A list of event's that need to be fired before the compound event can fire.<br><em><em>NOTE</em>: these will all be fired as <a href="#latched-events">:latched</a>.</em>
+    </li>
+    <li>
+        <em>{string}</em> <strong>name</strong> : The compound event's name
+    </li>
+    <li>
+        <em>{function}</em> <strong>event</strong> (optional): The event to be added to the compound event's <strong>event stack</strong>
+    </li>
+</ol>
+<div class="highlight">
+    <pre><span class="nx">addEvent</span><span class="p">(</span> <span class="p">[</span><span class="s1">'dom.ready'</span><span class="p">,</span><span class="s1">'template.ready'</span><span class="p">],</span> <span class="s1">'everythings.ready'</span><span class="p">,</span> <span class="nx">fn</span> <span class="p">)</span>
+    </pre>
+</div>
 
-<ol>
-<li>
-<em>{array}</em> <strong>names</strong> : A list of event's that need to be fired before the compound event can fire.<br><em><em>NOTE</em>: these will all be fired as <a href="#latched-events">:latched</a>.</em> </li>
-<li>
-<em>{string}</em> <strong>name</strong> : The compound event's name</li>
-<li>
-<em>{function}</em> <strong>event</strong> (optional): The event to be added to the compound event's <strong>event stack</strong>
-</li>
-</ol><div class="highlight"><pre><span class="nx">addEvent</span><span class="p">(</span> <span class="p">[</span><span class="s1">'dom.ready'</span><span class="p">,</span><span class="s1">'template.ready'</span><span class="p">],</span> <span class="s1">'everythings.ready'</span><span class="p">,</span> <span class="nx">fn</span> <span class="p">)</span>
-</pre></div>
-
-<h4>Examples:</h4>
-
+<h4>Example:</h4>
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">EventsMixin</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah/mixin'</span><span class="p">)</span>
 <span class="kd">var</span> <span class="nx">mediator</span> <span class="o">=</span> <span class="nx">extend</span><span class="p">({},</span> <span class="nx">EventsMixin</span><span class="p">)</span>
 
@@ -223,25 +236,29 @@
 <span class="nx">mediator</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">(</span><span class="s1">'both.things'</span><span class="p">,</span> <span class="kd">function</span> <span class="nx">letsAddAnother</span> <span class="p">()</span> <span class="p">{})</span>
 </pre></div>
 
-<h1></h1>
 
+
+
+
+
+<!-- ----------------------------------------------------  -->
+<a class="hr" name="addevents"></a>
 <h3>#addEvents</h3>
-
 <p>A convenience method for adding multiple event stacks at a time.</p>
 
 <h4>Arguments:</h4>
-
 <h6><strong>Standard</strong></h6>
+<ol class="arguments">
+    <li>
+        <em>{object}</em> <strong>hash</strong> : key/value object where <code>key</code> is the event name, and <code>value</code> is a function or array of functions<br>
+    </li>
+</ol>
 
-<ol>
-<li>
-<em>{object}</em> <strong>hash</strong> : key/value object where <code>key</code> is the event name, and <code>value</code> is a function or array of functions<br>
-</li>
-</ol><div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">addEvents</span><span class="p">({</span><span class="nx">key</span><span class="o">:</span> <span class="nx">fn</span><span class="p">,</span> <span class="nx">anotherKey</span><span class="o">:</span> <span class="nx">anotherFn</span> <span class="p">})</span>
-</pre></div>
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">addEvents</span><span class="p">({</span><span class="nx">key</span><span class="o">:</span> <span class="nx">fn</span><span class="p">,</span> <span class="nx">anotherKey</span><span class="o">:</span> <span class="nx">anotherFn</span> <span class="p">})</span>
+</pre>
+</div>
 
 <h4>Example:</h4>
-
 <div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">addEvents</span><span class="p">({</span>
     <span class="s1">'model.ready'</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'/path'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">response</span><span class="p">)</span> <span class="p">{</span>
@@ -261,23 +278,27 @@
         <span class="p">}</span>
     <span class="p">]</span>
 <span class="p">})</span>
-</pre></div>
+</pre>
+</div>
 
-<h1></h1>
 
+
+<!-- ----------------------------------------------------  -->
+<a class="hr" name="removeevent"></a>
 <h3>#removeEvent</h3>
-
 <h4>Arguments:</h4>
-
 <h6><strong>Standard</strong></h6>
 
-<ol>
-<li>
-<em>{string}</em> <strong>name</strong> : the event stack identifier</li>
-<li>
-<em>{function}</em> <strong>event</strong> : a reference of the function to remove</li>
-</ol><h4>Example:</h4>
+<ol class="arguments">
+    <li>
+        <em>{string}</em> <strong>name</strong> : the event stack identifier
+    </li>
+    <li>
+        <em>{function}</em> <strong>event</strong> : a reference of the function to remove
+    </li>
+</ol>
 
+<h4>Example:</h4>
 <div class="highlight"><pre><span class="kd">function</span> <span class="nx">doThis</span> <span class="p">()</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'lol'</span><span class="p">)</span>
 <span class="p">}</span>
@@ -288,38 +309,47 @@
 <span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'on.lol'</span><span class="p">)</span> <span class="c1">// nothing happens</span>
 </pre></div>
 
-<h1></h1>
 
+<!-- ----------------------------------------------------  -->
+<a class="hr" name="fireevent"></a>
 <h3>#fireEvent</h3>
-
 <h4>Arguments:</h4>
 
 <h6><strong>Standard</strong></h6>
+<ol class="arguments">
+    <li>
+        <em>{string}</em> <strong>name</strong> : The event stack identifer
+    </li>
+    <li>
+        <em>{arguments}</em> <strong>arguments</strong> (optional) : Every subsequent argument will be passed into  the fired events
+    </li>
+</ol>
 
-<ol>
-<li>
-<em>{string}</em> <strong>name</strong> : The event stack identifer</li>
-<li>
-<em>{arguments}</em> <strong>arguments</strong> (optional) : Every subsequent argument will be passed into  the fired events</li>
-</ol><div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'name'</span>  <span class="cm">/*, arg1, arg2, … */</span><span class="p">)</span>
-</pre></div>
+<div class="highlight">
+    <pre><span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'name'</span>  <span class="cm">/*, arg1, arg2, … */</span><span class="p">)</span>
+    </pre>
+</div>
 
 <h6>Latched Events</h6>
+<ol class="arguments">
+    <li>
+        <em>{string}</em> '__name__' + ':latched' : An event stack identifier with a concatenated <code>:latched</code>
+    </li>
+    <li>
+        <em>{arguments}</em> <strong>arguments</strong> : The arguments work the same as with the standard firing
+    </li>
+</ol>
 
-<ol>
-<li>
-<em>{string}</em> '__name__' + ':latched' : An event stack identifier with a concatenated <code>:latched</code> </li>
-<li>
-<em>{arguments}</em> <strong>arguments</strong> : The arguments work the same as with the standard firing</li>
-</ol><p>A latched event is one that once fired, remains active for the remainder of the application. Once fired,   Subsequent attempts to add a function to a latched event's event stack will result in the function being fired immedatly. </p>
+<p>A latched event is one that once fired, remains active for the remainder of the application. Once fired,   Subsequent attempts to add a function to a latched event's event stack will result in the function being fired immedatly. </p>
 
 <p>An example of a native "latched" event would be the <code>DOMContentLoaded</code> event. Once the DOM Content has loaded, it will forever be loaded. </p>
 
-<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'name:latched'</span>  <span class="cm">/*, arg1, arg2, …*/</span><span class="p">)</span>
-</pre></div>
+<div class="highlight">
+    <pre><span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'name:latched'</span>  <span class="cm">/*, arg1, arg2, …*/</span><span class="p">)</span>
+    </pre>
+</div>
 
 <h4>Example:</h4>
-
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">EventMixin</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'yeah/mixin'</span><span class="p">)</span>
 <span class="kd">var</span> <span class="nx">instance</span> <span class="o">=</span> <span class="nx">extend</span><span class="p">({},</span> <span class="nx">EventMixin</span><span class="p">)</span>
 <span class="kd">var</span> <span class="nx">wachooSay</span> <span class="o">=</span> <span class="p">[]</span>
@@ -347,46 +377,56 @@
 <span class="p">})</span> <span class="c1">// will alert `Simple Hello` immediatly</span>
 </pre></div>
 
-<h1></h1>
 
+
+<!-- ----------------------------------------------------  -->
+<a class="hr" name="hasfired"></a>
 <h3>#hasFired</h3>
-
 <h4>Arguments:</h4>
 
 <h6><strong>Standard</strong></h6>
 
-<ol>
-<li>
-<em>{string}</em> <strong>name</strong> : Event stack identifer</li>
-</ol><div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">hasFired</span><span class="p">(</span><span class="s1">'name'</span><span class="p">)</span>
-</pre></div>
+<ol class="arguments">
+    <li>
+        <em>{string}</em> <strong>name</strong> : Event stack identifer
+    </li>
+</ol>
+
+<div class="highlight">
+    <pre><span class="nx">instance</span><span class="p">.</span><span class="nx">hasFired</span><span class="p">(</span><span class="s1">'name'</span><span class="p">)</span>
+    </pre>
+</div>
 
 <h4>Example:</h4>
-
-<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">(</span><span class="s1">'smile'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+<div class="highlight">
+    <pre><span class="nx">instance</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">(</span><span class="s1">'smile'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
     <span class="nx">alert</span><span class="p">(</span><span class="s1">':)'</span><span class="p">)</span>
-<span class="p">})</span>
-<span class="nx">instance</span><span class="p">.</span><span class="nx">hasFired</span><span class="p">(</span><span class="s1">'smile'</span><span class="p">)</span> <span class="c1">// false</span>
-<span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'smile'</span><span class="p">)</span> <span class="c1">// alerts `smile</span>
-<span class="nx">instance</span><span class="p">.</span><span class="nx">hasFired</span><span class="p">(</span><span class="s1">'smile'</span><span class="p">)</span> <span class="c1">// true</span>
-</pre></div>
+    <span class="p">})</span>
+    <span class="nx">instance</span><span class="p">.</span><span class="nx">hasFired</span><span class="p">(</span><span class="s1">'smile'</span><span class="p">)</span> <span class="c1">// false</span>
+    <span class="nx">instance</span><span class="p">.</span><span class="nx">fireEvent</span><span class="p">(</span><span class="s1">'smile'</span><span class="p">)</span> <span class="c1">// alerts `smile</span>
+    <span class="nx">instance</span><span class="p">.</span><span class="nx">hasFired</span><span class="p">(</span><span class="s1">'smile'</span><span class="p">)</span> <span class="c1">// true</span>
+    </pre>
+</div>
 
-<h1></h1>
 
+
+<!-- ----------------------------------------------------  -->
+<a class="hr" name="getevents"></a>
 <h3>#getEvents</h3>
-
 <h4>Arguments:</h4>
 
 <h6><strong>Standard</strong></h6>
 
-<ol>
-<li>
-<em>{string}</em> <strong>name</strong> : Event stack identifer</li>
-</ol><div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">getEvents</span><span class="p">(</span><span class="s1">'name'</span><span class="p">)</span>
+<ol class="arguments">
+    <li>
+        <em>{string}</em> <strong>name</strong> : Event stack identifer
+    </li>
+</ol>
+
+<div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">getEvents</span><span class="p">(</span><span class="s1">'name'</span><span class="p">)</span>
 </pre></div>
 
 <h4>Example:</h4>
-
 <div class="highlight"><pre><span class="kd">var</span> <span class="nx">fn</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
     <span class="nx">alert</span><span class="p">(</span><span class="s1">':)'</span><span class="p">)</span>
 <span class="p">}</span>
@@ -396,18 +436,16 @@
 <span class="nx">instance</span><span class="p">.</span><span class="nx">getEvents</span><span class="p">(</span><span class="s1">'smile'</span><span class="p">)</span> <span class="c1">// [fn] returns an array of the functions in the event stack</span>
 </pre></div>
 
-<h1></h1>
+<!-- ----------------------------------------------------  -->
 
+<a class="hr" name="callmemaybe"></a>
 <h3>#callMeMaybe</h3>
 
 <p>Returns a function that will fire a specified event stack when called.</p>
-
 <h4>Arguments:</h4>
-
 <p><em>same as <a href="#fireevent">#fireEvent</a></em></p>
 
 <h4>Example:</h4>
-
 <div class="highlight"><pre><span class="nx">instance</span><span class="p">.</span><span class="nx">addEvent</span><span class="p">(</span><span class="s1">'hello'</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">arg</span><span class="p">)</span> <span class="p">{</span>
     <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Hello'</span> <span class="o">+</span> <span class="s1">' '</span> <span class="o">+</span> <span class="nx">arg</span><span class="p">)</span>
 <span class="p">})</span>
@@ -415,10 +453,12 @@
 <span class="nx">latered</span><span class="p">()</span> <span class="c1">// logs: Hello Chase</span>
 </pre></div>
       </section>
-      <footer>
+
+
+      <!-- <footer>
         <p>This project is maintained by <a href="https://github.com/jiggliemon">jiggliemon</a></p>
         <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
-      </footer>
+      </footer> -->
     </div>
     <script src="javascripts/scale.fix.js"></script>
               <script type="text/javascript">
