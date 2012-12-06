@@ -131,6 +131,17 @@ describe('EventMixin', function () {
 
   })
 
+  describe('#removeEvent', function () {
+    it('should remove the event specified from the event stack', function () {
+      Mediator.addEvent('on.lol', fired)
+      Mediator.fireEvent('on.lol')
+      Mediator.removeEvent('on.lol', fired)
+      Mediator.fireEvent('on.lol')
+
+      assert.equal(1, fired.count)
+    })
+  })
+
   describe('#callMeMaybe', function () {
     it('should return a constructed function that will fire an event', function () {
       Mediator.addEvent("fire", fired)

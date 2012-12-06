@@ -126,7 +126,7 @@ var mixin = {
     var _events = make(self, _EVENTS_, {})
     var events = make(_events, type, [])
     var i = events.indexOf(callback)
-    if (i) {
+    if (i !== -1) {
       events = remove(events,i)
     }
     return self
