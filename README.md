@@ -1,7 +1,57 @@
 # Yeah
-Yet another event handler
+Yet another event handler (AKA Sub/Pub).  What seperates Yeah from other Sub/Pub helpers is it provides two key features to help deal with event heavy applications; Compound events and Latched events.  
+
+#### Examples:
+- [Using Yeah With Facebook's JS SDK]()
+- [Using As A Global Mediator]()
+
+#### Methods:
+- [addEvent](#addevent)
+- [addEvents](#addevents)
+- [removeEvent](#removeevent)
+- [fireEvent](#fireevent)
+- [hasFired](#hasfired)
+- [getEvents](#getevents)
+- [callMeMaybe](#callmemaybe)
+
 
 ## Examples:
+
+#### Extending objects
+There's a few ways you can mix Yeah's functionality into your application.
+
+```js 
+var yeah = require('yeah')
+var APP = yeah({
+	initialize: function (what, options) {
+		options = options || {}
+		this.addEvents(options.events)
+		this.fireEvent('hello', what)
+	}
+})
+
+APP.initialize('World', {
+	events: {
+		hello: function (what) {
+			alert('Hello '+ what)
+		}
+	}
+})
+
+// ==========================
+// Use as a standard constructor
+var yeah = require('yeah')
+var APP = new yeah()
+
+// ==========================
+// Request the `mixin` object to use as a standard mixin
+var EventsMixin = require('yeah/mixin')
+var APP = {}
+extend(APP, EventsMixin)
+```
+
+#### Using As A Global Mediator
+This example show's yeah being used as a global mediator.  We're utilizing  compound events to detect when the app can initialize (after the FB object is available & the DOM is ready).
 
 ```js
 var Mediator = require('yeah')
@@ -40,22 +90,8 @@ Mediator.addEvent(['DOM.ready','FB.ready'], 'APP.env.ready', function () {
 
 ```
 
-## Mixin API
 
-#### Methods:
-- [addEvent](#addevent)
-- [addEvents](#addevents)
-- [removeEvent](#removeevent)
-- [fireEvent](#fireevent)
-- [hasFired](#hasfired)
-- [getEvents](#getevents)
-- [callMeMaybe](#callmemaybe)
-
-#### Example:
-```js
-var EventMixin = require('yeah/mixin')
-var mediator = extend({}, EventMixin)
-```
+## Methods
 
 ===
 ### #addEvent
@@ -78,9 +114,11 @@ addEvent( 'name', [fn1, fn2 /*, …*/] )
 ```    
 
 ###### __Create Compound Event__ 
-1. *{array}* __names__ : A list of event's that need to be fired before the compound event can fire  
-2. *{string}* __name__ : The compound event's name  
+1. *{array}* __names__ : A list of event's that need to be fired before the compound event can fire.  
+_*NOTE*: these will all be fired as [:latched](#latched-events)._ 
+2. *{string}* __name__ : The compound event's name
 3. *{function}* __event__ (optional): The event to be added to the compound event's __event stack__
+
 
 ```js
 addEvent( ['dom.ready','template.ready'], 'everythings.ready', fn )
