@@ -39,6 +39,9 @@
         </ul>
 
         <dl class="glossary">
+            <dt>Usage:</dt>
+            <dd><a href="#amd">AMD</a></dd>
+
             <dt>Examples:</dt>
             <dd><a href="#extending-objects">Extending Objects</a></dd>
             <dd><a href="#using-as-a-global-mediator">Using As A Global Mediator</a></dd>
@@ -60,7 +63,15 @@
         <h1>Yeah</h1>
         <p>Yet another event handler (AKA Sub/Pub).  What seperates Yeah from other Sub/Pub helpers is it provides two key features to help deal with event heavy applications; Compound events and Latched events.</p>
 
-
+<h2>Usage</h2>
+<a name="amd"></a>
+<h4>AMD</h4>
+<p>Yeah is currently only built for AMD environments.  The source is written in CommonJS format, then converted to AMD via an r.js build.</p>
+<p>the `yeah.js` contains two objects: </p>
+<ol>
+    <li>`yeah/index` or simply `yeah` provides the constuctor function; which can also act as a Mediator</li>
+    <li>`yeah/mixin` contains all the methods</li>
+</ol>
 
 <h2>Examples:</h2>
 <a name="extending-objects"></a>
