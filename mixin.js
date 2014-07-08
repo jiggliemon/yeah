@@ -46,10 +46,10 @@ function removeLatched(type){
 var mixin = {
    getEvents: function(key){
      var _events = make(this, _EVENTS_, {})
-     var events = _events[key] 
+     var events = _events[key]
      return key ? events ? events : [] : Object.keys(_events)
   }
-  
+
   ,addCompoundEvent: function ( events, type, callback ) {
     type = removeLatched[call](this,type)
     var  self = this
@@ -70,22 +70,22 @@ var mixin = {
 
       self.fireEvent(type +':latched')
     }
-    
+
     if ( callback ) {
       self.addEvent(type, callback )
     }
 
     return self
-  } 
+  }
 
   ,addEvent: function( /* Sting */ type, /* Function */ callback ){
 
-    if ( typeOf(type, 'array') ) { 
+    if ( typeOf(type, 'array') ) {
       return this.addCompoundEvent.apply(this, arguments)
     }
 
     type = removeLatched.call(this,type)
-    
+
     var  self = this
     var _events = make(self, _EVENTS_, {})
     var events = make(_events, type, [])
@@ -115,7 +115,7 @@ var mixin = {
         }
       }
     } else {
-      throw new TypeError('`#addEvent`\'s second argument must be a function or an array') 
+      throw new TypeError('`#addEvent`\'s second argument must be a function or an array')
     }
 
     return self
@@ -141,7 +141,7 @@ var mixin = {
     }
     return self
   }
-  
+
   ,fireEvent: function(/* String */ type) {
     type = removeLatched[call](this,type)
     var self = this
@@ -154,9 +154,9 @@ var mixin = {
     var length = events ? events.length : 0
     var args = slice(arguments,1)
     var i = 0
-    
+
     _switched[type] = 1
-    
+
     if ( events && length ) {
       for ( ; i < length; i++ ) {
         if ( i in events) {
@@ -166,12 +166,12 @@ var mixin = {
         }
       }
     }
-    
+
     if ( isLatched ) {
       _args[type] = args
       _events[type] = []
     }
-    
+
     return self
   }
 
@@ -186,6 +186,8 @@ var mixin = {
     return  function () { self.fireEvent.apply(self,args) }
   }
 }
+
+mixin.on = mixin.addEvent
 
 module.exports = mixin
 
