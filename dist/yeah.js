@@ -222,7 +222,6 @@ Mediator.prototype = extend({}, mixin)
 extend(Mediator, mixin)
 
 if (typeof document !== 'undefined') {
-  var slice = Array.prototype.slice
   var s = document.createElement('script')
   var addNodeMethod = s.addEventListener ? 'addEventListener':'attachEvent'
   var removeNodeMethod = s.removeEventLisnener ? 'removeEventLisnener':'detachEvent'
@@ -239,13 +238,13 @@ if (typeof document !== 'undefined') {
     ,addListener : function ( node, event, fn, capture ) {
       var hasNode = typeof node == 'string'?1:0
       var el = hasNode?s:node
-      el[addNodeMethod].apply(el,slice.call(arguments, hasNode))
+      el[addNodeMethod].apply(el,slice(arguments, hasNode))
     }
 
     ,removeListener : function ( node, event, fn, capture ) {
       var hasNode = typeof node == 'string' ?1:0
       var el = hasNode?s:node
-      el[removeNodeMethod].apply(el,slice.call(arguments, hasNode))
+      el[removeNodeMethod].apply(el,slice(arguments, hasNode))
     }
   })
 
