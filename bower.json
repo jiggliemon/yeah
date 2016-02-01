@@ -1,0 +1,21 @@
+{
+  "name": "yeah",
+  "main": "dist/yeah.js",
+  "version": "0.0.3",
+  "homepage": "https://github.com/jiggliemon/yeah",
+  "authors": [
+    "Chase Wilson <chase@agroism.com>"
+  ],
+  "description": "Event Handling",
+  "keywords": [
+    "Events"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
