@@ -6,14 +6,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 /**
  * Yeah: Yet Another Event Handler
- * - Handle normal eventing crap. .on, .fire etc.
+ * - Handle normal eventing crap. .on, .emit etc.
  * - Handle `latched` events
  * - Handle `composite` events
  * - Handle ga-style event handling yeah.push([method, ...])
  * - Handle event bubbling (woah)
  */
-var LATCHED = /:(latch(ed$)?)/i;
-
 var GLOB = typeof global !== 'undefined' ? global : window;
 
 var yeah = function () {
@@ -182,9 +180,19 @@ var yeah = function () {
     value: function emit(event) {
       var listener = this.getListener(event);
       var args = [].slice.call(arguments, 1);
-      listener.fire.apply(listener, args);
+      listener.fire.apply(listener, new Event(this), args);
 
       return listener;
+    }
+  }, {
+    key: 'callMeMaybe',
+    value: function callMeMaybe(event) {
+      var _this = this;
+
+      var self = this;
+      return function () {
+        return _this.emit(event);
+      };
     }
   }]);
 
@@ -240,7 +248,7 @@ var Listener = function () {
     }
   }, {
     key: 'fire',
-    value: function fire(args, context) {
+    value: function fire(e, args, context) {
       var self = this;
       var onces = [];
       this.callbacks.forEach(function (callback) {
@@ -249,8 +257,9 @@ var Listener = function () {
           onces.push(callback);
         }
 
-        callback.apply(context || self, args);
+        callback.apply(context || self, e, args, context);
       });
+
       if (onces.length) {
         onces.forEach(self.removeCallback.bind(self));
       }
@@ -285,6 +294,15 @@ var Listener = function () {
 
   return Listener;
 }();
+
+;
+
+var Event = function Event(target) {
+  _classCallCheck(this, Event);
+
+  this.name = target.name;
+  this.target = target;
+};
 
 ;
 

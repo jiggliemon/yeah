@@ -1,13 +1,11 @@
 /**
  * Yeah: Yet Another Event Handler
- * - Handle normal eventing crap. .on, .fire etc.
+ * - Handle normal eventing crap. .on, .emit etc.
  * - Handle `latched` events
  * - Handle `composite` events
  * - Handle ga-style event handling yeah.push([method, ...])
  * - Handle event bubbling (woah)
  */
-const LATCHED = /:(latch(ed$)?)/i;
-
 const GLOB = (typeof global !== 'undefined')? global : window;
 
 class yeah {
@@ -153,7 +151,7 @@ class yeah {
   emit(event) {
     var listener = this.getListener(event);
     var args = [].slice.call(arguments, 1);
-    listener.fire.apply(listener, args);
+    listener.fire.apply(listener, new Event(this), args);
 
     return listener;
   }
@@ -209,7 +207,7 @@ class Listener {
   }
 
 
-  fire(args, context) {
+  fire(e, args, context) {
     var self = this;
     var onces = [];
     this.callbacks.forEach(function(callback) {
@@ -218,8 +216,9 @@ class Listener {
         onces.push(callback);
       }
 
-      callback.apply(context || self, args);
+      callback.apply(context || self, e, args, context);
     });
+
     if(onces.length) {
       onces.forEach(self.removeCallback.bind(self));
     }
@@ -247,6 +246,13 @@ class Listener {
   }
 };
 
+
+class Event {
+  constructor(target){
+    this.name = target.name;
+    this.target = target;
+  }
+};
 
 module.exports = yeah;
 
