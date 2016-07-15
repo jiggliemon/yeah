@@ -12,7 +12,6 @@ window.yeh = yeah({
   }
 });
 
-yeh.push(['compound', 'app.ready', ['dom.ready','yeh.ready']]);
 $(document).domready(yeh.callMeMaybe('dom.ready'));
 yeh.on('app.ready', yeh.initialize);
 ```
