@@ -8,7 +8,7 @@ yeh.push(['compound', 'app.ready', ['dom.ready','yeh.ready']]);
 
 window.yeh = yeah({
   initialize: function() {
-    console.log('Star the application!');
+    console.log('Start the application!');
   }
 });
 
