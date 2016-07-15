@@ -14,6 +14,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
  */
 var LATCHED = /:(latch(ed$)?)/i;
 
+var GLOB = typeof global !== 'undefined' ? global : window;
+
 var yeah = function () {
   _createClass(yeah, null, [{
     key: 'extend',
@@ -44,10 +46,10 @@ var yeah = function () {
     this.compoundListeners = {};
 
     if (typeof globalName == 'string') {
-      if (window[globalName]) {
+      if (GLOB[globalName]) {
         var yeh = new yeah();
-        window[globalName].forEach(yeh.push);
-        window[globalName] = yeh;
+        GLOB[globalName].forEach(yeh.push);
+        GLOB[globalName] = yeh;
       }
       this.getListener(globalName + '.ready').fire().latch();
     }
@@ -76,15 +78,7 @@ var yeah = function () {
   }, {
     key: 'once',
     value: function once(event, callback) {
-      this.addListener(event, callback);
-
-      // Add another callback to remove the once provided.
-      // and then remoce that one.
-      var listener = this.getListener(event);
-      function _remove() {
-        listener.removeCallback(callback).removeCallback(_remove);
-      }
-      listener.addCallback(_remove);
+      this.addListener(event, callback, true);
     }
 
     /**
@@ -95,7 +89,9 @@ var yeah = function () {
 
   }, {
     key: 'compound',
-    value: function compound(name, events, callback) {}
+    value: function compound(name, events, callback) {
+      return this.addCompoundListener(name, events, callback);
+    }
 
     /**
      * namespace.push({on: ['ready', fn ]})
@@ -125,15 +121,14 @@ var yeah = function () {
     }
   }, {
     key: 'addListener',
-    value: function addListener(event, callback) {
+    value: function addListener(event, callback, once) {
       var listener = this.getListener(event);
 
       if (listener.latched()) {
         callback();
         return this;
       }
-
-      listener.addCallback(callback);
+      listener.addCallback(callback, once);
       return this;
     }
   }, {
@@ -159,36 +154,27 @@ var yeah = function () {
         var listener = self.getListener(event);
         listener.addCallback(_fireCheck);
         compoundListener[event] = listener;
-        return event;
       });
 
       function _fireCheck() {
-        for (var k in compoundListener) {
-          if (compoundListener.hasOwnProperty(k)) {
-            if (!compoundListener[k].fired) {
-              return;
-            }
-          }
+        if (Object.keys(compoundListener).some(function (key) {
+          return compoundListener[key].fired;
+        })) {
+          listener.fire().latch();
         }
-
-        listener.fire().latched();
       }
 
       function _removeFireCheck() {
-        for (var k in compoundListener) {
-          if (compoundListener.hasOwnProperty(k)) {
-            compoundListener[k].removeCallback(_fireCheck);
-          }
-        }
-        listener.removeCallback(_removeFireCheck);
+        Object.keys(compoundListener).forEach(function (key) {
+          return compoundListener[key].removeCallback(_fireCheck);
+        });
       }
-
-      listener.addCallback(_removeFireCheck);
 
       if (callback) {
         listener.addCallback(callback);
       }
 
+      self.once(name, _removeFireCheck);
       return self;
     }
   }, {
@@ -196,7 +182,7 @@ var yeah = function () {
     value: function emit(event) {
       var listener = this.getListener(event);
       var args = [].slice.call(arguments, 1);
-      listener.fire.call(listener, args);
+      listener.fire.apply(listener, args);
 
       return listener;
     }
@@ -211,17 +197,28 @@ var Listener = function () {
 
     this.name = name;
     this.parent = parent;
+    this.fired = false;
     this._latched = false;
     this.callbacks = [];
+    this.metaMap = new WeakMap();
   }
 
   _createClass(Listener, [{
     key: 'addCallback',
-    value: function addCallback(cb) {
+    value: function addCallback(cb, once) {
       if (this._latched) {
         cb();
       } else if (typeof cb == 'function') {
-        this.callbacks.push(cb);
+        var meta = this.metaMap.get(cb);
+        if (meta == undefined) {
+          this.callbacks.push(cb);
+          meta = {};
+          if (once) {
+            meta.once = true;
+          }
+
+          this.metaMap.set(cb, meta);
+        }
       }
     }
   }, {
@@ -229,7 +226,7 @@ var Listener = function () {
     value: function removeCallback(cb) {
       var index = this.callbacks.indexOf(cb);
       if (index !== -1) {
-        this.callbacks.splice(index, 1);
+        this.metaMap.delete(this.callbacks.splice(index, 1)[0]);
       }
       return this;
     }
@@ -239,16 +236,25 @@ var Listener = function () {
       if (typeof is !== 'undefined') {
         this._latched = is;
       }
-
       return this._latched;
     }
   }, {
     key: 'fire',
     value: function fire(args, context) {
       var self = this;
+      var onces = [];
       this.callbacks.forEach(function (callback) {
+        var meta = self.metaMap.get(callback);
+        if (meta.once) {
+          onces.push(callback);
+        }
+
         callback.apply(context || self, args);
       });
+      if (onces.length) {
+        onces.forEach(self.removeCallback.bind(self));
+      }
+
       this.fired = true;
 
       return this;

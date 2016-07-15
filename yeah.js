@@ -157,6 +157,11 @@ class yeah {
 
     return listener;
   }
+
+  callMeMaybe(event){
+    var self = this;
+    return () => this.emit(event)
+  }
 }
 
 class Listener {
