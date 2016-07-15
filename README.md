@@ -6,7 +6,7 @@ window.yeh = window.yeh || [];
 
 yeh.push(['compound', 'app.ready', ['dom.ready','yeh.ready']]);
 
-window.yeh = yeah({
+window.yeh = yeah('yeh', {
   initialize: function() {
     console.log('Start the application!');
   }
