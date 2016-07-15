@@ -1,263 +1,259 @@
-(function() {
+/**
+ * Yeah: Yet Another Event Handler
+ * - Handle normal eventing crap. .on, .fire etc.
+ * - Handle `latched` events
+ * - Handle `composite` events
+ * - Handle ga-style event handling yeah.push([method, ...])
+ * - Handle event bubbling (woah)
+ */
+const LATCHED = /:(latch(ed$)?)/i;
 
-var REGEX = /:(latch(ed$)?)/i;
-var call = 'call';
-var _EVENTS_ = '_events';
-var _SWITCHED_ = '_switched';
-var _LATCHED_ = '_latched';
-var _ARGUMENTS_ = '_arguments';
+const GLOB = (typeof global !== 'undefined')? global : window;
 
-
-function make (context, key, value ) {
-  context[key] = context[key] || value;
-  return context[key];
-}
-
-function typeOf(obj, is) {
-  var type = Object.prototype.toString.call(obj).slice(8,-1).toLowerCase();
-  return is? type == is : type;
-}
-
-function hasOwn (what, key) {
-  return Object.prototype.hasOwnProperty.call(what,key);
-}
-
-function slice (obj, offset) {
-  return Array.prototype.slice.call(obj, offset);
-}
-
-function remove (arr, from, to) {
-  if (from < 0) return arr
-  var rest = arr.slice(parseInt(to || from) + 1 || arr.length);
-  arr.length = from < 0 ? arr.length + from : from;
-  return arr.push.apply(arr, rest);
-}
-
-function removeLatched(type){
-  var _latched = make(this,_LATCHED_, {})
-  if ( type.indexOf(':') !== -1) {
-    if ( REGEX.test(type) ) {
-      type = type.replace(REGEX,'');
-      _latched[type] = 1;
-    }
-  }
-  return type;
-}
-
-
-var mixin = {
-   getEvents: function(key){
-     var _events = make(this, _EVENTS_, {});
-     var events = _events[key];
-     return key ? events ? events : [] : Object.keys(_events);
+class yeah {
+  static extend(obj) {
+    // this should be
+    // Object.assign Object.assign(obj, yeah.prototype);
+    Object.assign(obj, {
+      on: yeah.prototype.on,
+      once: yeah.prototype.once,
+      compound: yeah.prototype.compound,
+      addListener: yeah.prototype.addListener,
+      addCompoundListener: yeah.prototype.addCompoundListener,
+      removeListener: yeah.prototype.removeListener,
+      removeAllListeners: yeah.prototype.removeAllListeners,
+      setMaxListeners: yeah.prototype.setMaxListeners,
+      listeners: yeah.prototype.listeners,
+      emit: yeah.prototype.emit,
+      push: yeah.prototype.push
+    });
+    return obj;
   }
 
-  ,addCompoundEvent: function ( events, type, callback ) {
-    type = removeLatched[call](this,type);
-    var  self = this;
-    var _switched = make(self,_SWITCHED_, {});
+  constructor(globalName, methods) {
+    this.listeners = {};
+    this.compoundListeners = {};
 
-    // todo: use yaul/map
-    events = events.map(function ( event ) {
-      event = removeLatched[call](self, event);
-      self.addEvent(event, fireCheck);
-      return event;
-    })
-
-    function fireCheck () {
-      var length = events.length;
-      while ( length-- ) {
-        if(!_switched[events[length]]) {
-          return;
-        }
+    if (typeof globalName == 'string') {
+      if(GLOB[globalName]) {
+        var yeh = new yeah();
+        GLOB[globalName].forEach(yeh.push);
+        GLOB[globalName] = yeh;
       }
-
-      self.fireEvent(type +':latched');
+      this.getListener(globalName + '.ready').fire().latch();
     }
+  }
+
+  /**
+   * event [String | Array of strings] : name of the event handler
+   * callback [Function] : afunction to fire when event is triggered
+   * context [Object] : the context to fire the event against
+   */
+  on(event, callback) {
+    var self = this;
+    if (Array.isArray(event)) {
+      event.forEach(function(e) {
+        this.addListener(e, callback);
+      }.bind(this));
+      return;
+    }
+
+    this.addListener(event, callback);
+  }
+
+  once(event, callback) {
+    this.addListener(event, callback, true);
+  }
+
+  /**
+   * name [String] : name of the event handler
+   * events [Array of events] :
+   * callback [Object] : the context to fire the event against
+   */
+  compound(name, events, callback) {
+    return this.addCompoundListener(name, events, callback);
+  }
+
+  /**
+   * namespace.push({on: ['ready', fn ]})
+   * namespace.push([
+   *  {on: ['ready', fn ]},
+   *  {compound: ['start', ['ready', 'domready']]},
+   *  {on: ['start', namespace.initialize]}
+   * ])
+   *
+   */
+  push(args){
+    Array.isArray(args)? args.forEach(this.push): true;
+    var keys = Object.keys(args);
+    var self = this;
+    keys.forEach(function(method) {
+      self[method].apply(self, args[method]);
+    });
+    return this;
+  }
+
+  getListener(event) {
+    return this.listeners[event] = this.listeners[event] || new Listener(event, this);
+  }
+
+  addListener(event, callback, once) {
+    var listener = this.getListener(event);
+
+    if (listener.latched()) {
+      callback();
+      return this;
+    }
+    listener.addCallback(callback, once);
+    return this;
+  }
+
+  removeListener(event, callbacevent, k) {
+    var listener = this.getListener(event, callback);
+    listener.removeCallback(callback);
+  }
+
+
+  removeAllListeners(){
+    var listener = this.getListener(event, callback);
+    listener.empty();
+  }
+
+  addCompoundListener(name, events, callback){
+    var  self = this;
+    var listener = this.getListener(name);
+    var compoundListener = this.compoundListeners[name] = this.compoundListeners[name] || {};
+
+    events.forEach(function ( event ) {
+      let listener = self.getListener(event);
+      listener.addCallback(_fireCheck);
+      compoundListener[event] = listener;
+    });
+
+    function _fireCheck () {
+      if (Object.keys(compoundListener).some(key => compoundListener[key].fired)) {
+        listener.fire().latch();
+      }
+    }
+
+    function _removeFireCheck () {
+      Object.keys(compoundListener).forEach(key => compoundListener[key].removeCallback(_fireCheck));
+    }
+
+
 
     if ( callback ) {
-      self.addEvent(type, callback );
+      listener.addCallback(callback);
     }
 
+    self.once(name, _removeFireCheck);
     return self;
   }
 
-  ,addEvent: function( /* Sting */ type, /* Function */ callback ){
+  emit(event) {
+    var listener = this.getListener(event);
+    var args = [].slice.call(arguments, 1);
+    listener.fire.apply(listener, args);
 
-    if ( typeOf(type, 'array') ) {
-      return this.addCompoundEvent.apply(this, arguments);
-    }
+    return listener;
+  }
+}
 
-    type = removeLatched.call(this,type);
+class Listener {
 
-    var  self = this;
-    var _events = make(self, _EVENTS_, {});
-    var events = make(_events, type, []);
-    var _args = make(self,_ARGUMENTS_, {});
-    var _latched = make(self,_LATCHED_, {});
-    var isLatched = _latched[type];
+  constructor(name, parent) {
+    this.name = name;
+    this.parent = parent;
+    this.fired = false;
+    this._latched = false;
+    this.callbacks = [];
+    this.metaMap = new WeakMap();
+  }
 
-    var callbackType = typeOf(callback);
-    if (callbackType == 'function'){
-      if (isLatched) {
-        callback.apply(self,_args[type]);
-      } else {
-        if (events.indexOf(callback) == -1) {
-          events.push(callback);
+
+  addCallback(cb, once) {
+    if (this._latched) {
+      cb();
+    } else if(typeof cb == 'function') {
+      var meta = this.metaMap.get(cb);
+      if (meta == undefined) {
+        this.callbacks.push(cb);
+        meta = {};
+        if (once) {
+          meta.once = true;
         }
-      }
-    } else if (callbackType == 'array') {
-      for (var i = 0; i < callback.length; i++) {
-        if (typeof callback[i] == 'function') {
-          if (isLatched) {
-            callback[i].apply(self, _args[type]);
-          } else {
-            if (events.indexOf(callback[i]) == -1) {
-              events.push(callback[i]);
-            }
-          }
-        }
-      }
-    } else {
-      throw new TypeError('`#addEvent`\'s second argument must be a function or an array')
-    }
 
-    return self
-  }
-
-  ,removeEvent: function (type, callback) {
-    var self = this
-    var _events = make(self, _EVENTS_, {});
-    var events = make(_events, type, []);
-    var i = events.indexOf(callback);
-    if (i !== -1) {
-      events = remove(events,i);
-    }
-    return self
-  }
-
-  ,addEvents: function(/* Object */ events){
-    var self = this
-    for ( var key in events ) {
-      if ( hasOwn(events, key) ) {
-        self.addEvent(key,events[key]);
+        this.metaMap.set(cb, meta);
       }
     }
-    return self
   }
 
-  ,fireEvent: function(/* String */ type) {
-    type = removeLatched[call](this,type);
+  removeCallback(cb) {
+    var index = this.callbacks.indexOf(cb);
+    if (index !== -1) {
+      this.metaMap.delete(this.callbacks.splice(index, 1)[0]);
+    }
+    return this;
+  }
+
+  latched(is) {
+    if (typeof is !== 'undefined') {
+      this._latched = is;
+    }
+    return this._latched;
+  }
+
+
+  fire(args, context) {
     var self = this;
-    var _latched = make(self,_LATCHED_, {});
-    var _switched = make(self,_SWITCHED_, {});
-    var _args = make(self,_ARGUMENTS_, {});
-    var _events = make(self, _EVENTS_, {});
-    var isLatched = _latched[type];
-    var events = _events[type];
-    var length = events ? events.length : 0;
-    var args = slice(arguments,1);
-    var i = 0;
-
-    _switched[type] = 1;
-
-    if ( events && length ) {
-      for ( ; i < length; i++ ) {
-        if ( i in events) {
-          try{
-            events[i].apply(self,args);
-          } catch (e) { }
-        }
-      }
-    }
-
-    if ( isLatched ) {
-      _args[type] = args;
-      _events[type] = [];
-    }
-
-    return self;
-  }
-
-  ,hasFired: function (key) {
-    var _switched = make(this,_SWITCHED_, {});
-    return _switched[key] ? true : false;
-  }
-
-  ,callMeMaybe: function () {
-    var self = this;
-    var args = arguments;
-    return  function () { self.fireEvent.apply(self,args) };
-  }
-}
-
-mixin.on = mixin.addEvent;
-
-
-var extend = function (foo, baz) {
-  for (var key in baz) {
-    if(baz.hasOwnProperty(key)) {
-      foo[key] = baz[key]
-    }
-  }
-  return foo
-}
-
-
-function Mediator (arg){
-  if (arg) {
-    return extend(arg, mixin)
-  }
-
-  var self = this
-  self._events = {}
-  self._latched = {}
-  self._arguments = {}
-  self._switched = {}
-
-}
-
-Mediator.prototype = extend({}, mixin)
-
-extend(Mediator, mixin)
-
-if (typeof document !== 'undefined') {
-  var slice = Array.prototype.slice
-  var s = document.createElement('script')
-  var addNodeMethod = s.addEventListener ? 'addEventListener':'attachEvent'
-  var removeNodeMethod = s.removeEventLisnener ? 'removeEventLisnener':'detachEvent'
-
-  extend(Mediator, {
-     emit : function () {
-      if (arguments.length) {
-        s.dispatchEvent.apply(s,arguments)
+    var onces = [];
+    this.callbacks.forEach(function(callback) {
+      var meta = self.metaMap.get(callback);
+      if (meta.once) {
+        onces.push(callback);
       }
 
-      return this
+      callback.apply(context || self, args);
+    });
+    if(onces.length) {
+      onces.forEach(self.removeCallback.bind(self));
     }
 
-    ,addListener : function ( node, event, fn, capture ) {
-      var hasNode = typeof node == 'string'?1:0
-      var el = hasNode?s:node
-      el[addNodeMethod].apply(el,slice.call(arguments, hasNode))
-    }
+    this.fired = true;
 
-    ,removeListener : function ( node, event, fn, capture ) {
-      var hasNode = typeof node == 'string' ?1:0
-      var el = hasNode?s:node
-      el[removeNodeMethod].apply(el,slice.call(arguments, hasNode))
-    }
-  })
-
-  Mediator.on = Mediator.addListener
-  Mediator.off = Mediator.removeListener
-
-  if (typeof window !== 'undefined') {
-    window.yeah = Mediator;
+    return this;
   }
-}
 
-module.exports = Mediator;
+  empty() {
+    this.callbacks = [];
+    return this;
+  }
+
+  latch(empty = true) {
+    this._latched = true;
+    if(empty) {
+      this.empty();
+    }
+    return this;
+  }
+
+  unlatch() {
+    this._latched = false;
+  }
+};
 
 
-}());
+module.exports = yeah;
+
+
+
+
+
+
+
+
+
+
+
+
+
