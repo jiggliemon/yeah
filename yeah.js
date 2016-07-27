@@ -35,7 +35,7 @@ class yeah {
     if (typeof globalName == 'string') {
       if(GLOB[globalName]) {
         var yeh = new yeah();
-        GLOB[globalName].forEach(yeh.push);
+        GLOB[globalName].forEach(yeh.push.bind(yeh));
         GLOB[globalName] = yeh;
       }
       this.getListener(globalName + '.ready').fire().latch();
@@ -50,9 +50,7 @@ class yeah {
   on(event, callback) {
     var self = this;
     if (Array.isArray(event)) {
-      event.forEach(function(e) {
-        this.addListener(e, callback);
-      }.bind(this));
+      event.forEach((e) => self.addListener(e, callback));
       return;
     }
 
@@ -85,9 +83,7 @@ class yeah {
     Array.isArray(args)? args.forEach(this.push): true;
     var keys = Object.keys(args);
     var self = this;
-    keys.forEach(function(method) {
-      self[method].apply(self, args[method]);
-    });
+    keys.forEach( (method)  => self[method].apply(self, args[method]) );
     return this;
   }
 
@@ -210,7 +206,7 @@ class Listener {
   fire(e, args, context) {
     var self = this;
     var onces = [];
-    this.callbacks.forEach(function(callback) {
+    this.callbacks.forEach((callback) => {
       var meta = self.metaMap.get(callback);
       if (meta.once) {
         onces.push(callback);

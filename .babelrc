@@ -1,3 +1,9 @@
 {
-  "presets": ["es2015"]
+  "presets": ["es2015"],
+  "plugins": [
+    "transform-minify-booleans",
+    "transform-merge-sibling-variables",
+    "transform-property-literals",
+    "transform-remove-console"
+  ]
 }
