@@ -1,7 +1,7 @@
 {
   "name": "yeah",
   "main": "dist/yeah.js",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage": "https://github.com/jiggliemon/yeah",
   "authors": [
     "Chase Wilson <chase@agroism.com>"
