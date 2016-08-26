@@ -16,12 +16,14 @@ class yeah {
       on: yeah.prototype.on,
       once: yeah.prototype.once,
       compound: yeah.prototype.compound,
+      getListener: yeah.prorotype.getListener,
       addListener: yeah.prototype.addListener,
       addCompoundListener: yeah.prototype.addCompoundListener,
       removeListener: yeah.prototype.removeListener,
       removeAllListeners: yeah.prototype.removeAllListeners,
       setMaxListeners: yeah.prototype.setMaxListeners,
-      listeners: yeah.prototype.listeners,
+      listeners: {},
+      compoundListeners: {},
       emit: yeah.prototype.emit,
       push: yeah.prototype.push
     });
