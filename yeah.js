@@ -16,7 +16,7 @@ class yeah {
       on: yeah.prototype.on,
       once: yeah.prototype.once,
       compound: yeah.prototype.compound,
-      getListener: yeah.prorotype.getListener,
+      getListener: yeah.prototype.getListener,
       addListener: yeah.prototype.addListener,
       addCompoundListener: yeah.prototype.addCompoundListener,
       removeListener: yeah.prototype.removeListener,
@@ -149,7 +149,7 @@ class yeah {
   emit(event) {
     var listener = this.getListener(event);
     var args = [].slice.call(arguments, 1);
-    listener.fire.apply(listener, new Event(this), args);
+    listener.fire.apply(listener, [new Event(this), args]);
 
     return listener;
   }
@@ -214,7 +214,7 @@ class Listener {
         onces.push(callback);
       }
 
-      callback.apply(context || self, e, args, context);
+      callback.apply(context || self, [e, args]);
     });
 
     if(onces.length) {
