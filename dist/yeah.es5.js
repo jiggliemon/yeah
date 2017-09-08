@@ -1,6 +1,6 @@
 'use strict';
 
-var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || !1; descriptor.configurable = !0; if ("value" in descriptor) descriptor.writable = !0; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(),
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0, descriptor; i < props.length; i++) { descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || !1; descriptor.configurable = !0; if ("value" in descriptor) descriptor.writable = !0; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }(),
     GLOB = typeof global !== 'undefined' ? global : window,
     yeah = function () {
   _createClass(yeah, null, [{
@@ -137,28 +137,29 @@ var _createClass = function () { function defineProperties(target, props) { for 
     value: function addCompoundListener(name, events, callback) {
       var self = this,
           listener = this.getListener(name),
-          compoundListener = this.compoundListeners[name] = this.compoundListeners[name] || {};
-
-
-      events.forEach(function (event) {
-        var listener = self.getListener(event);
-        listener.addCallback(_fireCheck);
-        compoundListener[event] = listener;
-      });
-
-      function _fireCheck() {
-        if (Object.keys(compoundListener).some(function (key) {
+          compoundListener = this.compoundListeners[name] = this.compoundListeners[name] || {},
+          _fireCheck = function _fireCheck() {
+        if (events.every(function (key) {
           return compoundListener[key].fired;
         })) {
           listener.fire().latch();
         }
-      }
-
-      function _removeFireCheck() {
+      },
+          _removeFireCheck = function _removeFireCheck() {
         Object.keys(compoundListener).forEach(function (key) {
           return compoundListener[key].removeCallback(_fireCheck);
         });
-      }
+      };
+
+
+      // todo: loop through this using push/shift
+      // so we're sure it fires in order
+      events.forEach(function (event) {
+        var listener = self.getListener(event);
+        // push the fire check at the front of the stack
+        listener.callbacks.unshift(_fireCheck);
+        compoundListener[event] = listener;
+      });
 
       if (callback) {
         listener.addCallback(callback);
@@ -251,24 +252,24 @@ var Listener = function () {
     }
   }, {
     key: 'fire',
-    value: function fire(e, args, context) {
+    value: function fire(args, context) {
       var self = this,
           onces = [];
 
+      this.fired = !0;
+
       this.callbacks.forEach(function (callback) {
         var meta = self.metaMap.get(callback);
-        if (meta.once) {
+        if (meta && meta.once) {
           onces.push(callback);
         }
 
-        callback.apply(context || self, [e, args]);
+        callback.apply(context || self, args);
       });
 
       if (onces.length) {
         onces.forEach(self.removeCallback.bind(self));
       }
-
-      this.fired = !0;
 
       return this;
     }
@@ -281,7 +282,7 @@ var Listener = function () {
   }, {
     key: 'latch',
     value: function latch() {
-      var empty = arguments.length <= 0 || arguments[0] === undefined ? !0 : arguments[0];
+      var empty = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : !0;
 
       this._latched = !0;
       if (empty) {
@@ -299,15 +300,11 @@ var Listener = function () {
   return Listener;
 }();
 
-;
-
 var Event = function Event(target) {
   _classCallCheck(this, Event);
 
   this.name = target.name;
   this.target = target;
 };
-
-;
 
 module.exports = yeah;

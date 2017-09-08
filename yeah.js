@@ -119,24 +119,25 @@ class yeah {
     var  self = this;
     var listener = this.getListener(name);
     var compoundListener = this.compoundListeners[name] = this.compoundListeners[name] || {};
-
-    events.forEach(function ( event ) {
-      let listener = self.getListener(event);
-      listener.addCallback(_fireCheck);
-      compoundListener[event] = listener;
-    });
-
-    function _fireCheck () {
-      if (Object.keys(compoundListener).some(key => compoundListener[key].fired)) {
+    let _fireCheck = ()=>{
+      if (events.every(key => compoundListener[key].fired)) {
         listener.fire().latch();
       }
     }
 
-    function _removeFireCheck () {
+    let _removeFireCheck = ()=>{
       Object.keys(compoundListener).forEach(key => compoundListener[key].removeCallback(_fireCheck));
     }
 
 
+    // todo: loop through this using push/shift
+    // so we're sure it fires in order
+    events.forEach(( event ) => {
+      let listener = self.getListener(event);
+      // push the fire check at the front of the stack
+      listener.callbacks.unshift(_fireCheck);
+      compoundListener[event] = listener;
+    });
 
     if ( callback ) {
       listener.addCallback(callback);
@@ -205,23 +206,26 @@ class Listener {
   }
 
 
-  fire(e, args, context) {
+  fire( args, context) {
     var self = this;
     var onces = [];
+    this.fired = true;
+
+    console.log('GOT HERE')
+    console.log(this.callbacks);
+
     this.callbacks.forEach((callback) => {
       var meta = self.metaMap.get(callback);
-      if (meta.once) {
+      if (meta && meta.once) {
         onces.push(callback);
       }
-
-      callback.apply(context || self, [e, args]);
+      console.dir(callback);
+      callback.apply(context || self, args);
     });
 
-    if(onces.length) {
+    if (onces.length) {
       onces.forEach(self.removeCallback.bind(self));
     }
-
-    this.fired = true;
 
     return this;
   }
@@ -242,7 +246,7 @@ class Listener {
   unlatch() {
     this._latched = false;
   }
-};
+}
 
 
 class Event {
@@ -250,7 +254,7 @@ class Event {
     this.name = target.name;
     this.target = target;
   }
-};
+}
 
 module.exports = yeah;
 
