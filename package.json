@@ -1,6 +1,6 @@
 {
   "name": "yeah",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "Yet another event handler",
   "main": "yeah.js",
   "directories": {
