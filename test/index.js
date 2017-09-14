@@ -19,6 +19,7 @@ describe('yeah', function() {
 
   beforeEach(() => {
     called = 0;
+    alsoCalled = 0;
     yeh = new yeah('yeh');
   });
 

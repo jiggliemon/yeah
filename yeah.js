@@ -207,25 +207,26 @@ class Listener {
 
 
   fire( args, context) {
-    var self = this;
-    var onces = [];
     this.fired = true;
-
-    console.log('GOT HERE')
-    console.log(this.callbacks);
-
-    this.callbacks.forEach((callback) => {
-      var meta = self.metaMap.get(callback);
-      if (meta && meta.once) {
-        onces.push(callback);
-      }
-      console.dir(callback);
+    let self = this;
+    let onces = [];
+    let called = [];
+    let callback;
+    let meta
+    
+    while (this.callbacks.length){
+      callback = self.callbacks.pop();
+      meta = self.metaMap.get(callback);
       callback.apply(context || self, args);
-    });
-
-    if (onces.length) {
-      onces.forEach(self.removeCallback.bind(self));
-    }
+      // don't add the call once functions
+      if (meta && !meta.once) {
+        called.push(callback);
+      } else {
+        // but remove their metadata
+        self.metaMap.delete(callback);
+      }
+    };
+    self.callbacks = called;
 
     return this;
   }

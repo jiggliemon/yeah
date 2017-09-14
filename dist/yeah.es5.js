@@ -253,23 +253,27 @@ var Listener = function () {
   }, {
     key: 'fire',
     value: function fire(args, context) {
-      var self = this,
-          onces = [];
-
       this.fired = !0;
+      var self = this,
+          onces = [],
+          called = [],
+          callback = void 0,
+          meta = void 0;
 
-      this.callbacks.forEach(function (callback) {
-        var meta = self.metaMap.get(callback);
-        if (meta && meta.once) {
-          onces.push(callback);
-        }
 
+      while (this.callbacks.length) {
+        callback = self.callbacks.pop();
+        meta = self.metaMap.get(callback);
         callback.apply(context || self, args);
-      });
-
-      if (onces.length) {
-        onces.forEach(self.removeCallback.bind(self));
-      }
+        // don't add the call once functions
+        if (meta && !meta.once) {
+          called.push(callback);
+        } else {
+          // but remove their metadata
+          self.metaMap.delete(callback);
+        }
+      };
+      self.callbacks = called;
 
       return this;
     }
